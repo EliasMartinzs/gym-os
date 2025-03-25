@@ -140,3 +140,10 @@
     @apply bg-background text-foreground;
   }
 }
+
+.sombra-mesclada {
+  filter: drop-shadow(0 15px 10px rgba(0, 0, 0, 0.3));
+
+  /* Ajuste para suavizar a transição */
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
