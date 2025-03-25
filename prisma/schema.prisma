@@ -1,0 +1,255 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  avatarUrl String?
+  role      Role     @default(PERSONAL_TRAINER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos específicos
+  personalTrainer PersonalTrainer?
+  // student         Student?
+  Student         Student?
+
+  @@map("users")
+}
+
+enum Role {
+  PERSONAL_TRAINER
+  STUDENT
+}
+
+model PersonalTrainer {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Informações Básicas
+  bio             String?
+  specialties     String[] // Ex: ["Musculação", "Reabilitação"]
+  experienceYears Int?
+
+  // Formação Acadêmica
+  education      Education[]
+  certifications Certification[]
+
+  // Métodos de Trabalho
+  trainingPhilosophy String? // Sua abordagem filosófica
+  availableFormats   TrainingFormat[] // Formatos de atendimento
+
+  // Contato Profissional
+  instagram String?
+  website   String?
+
+  // Estatísticas (opcional)
+  clientSuccessStories Int? // Número de casos de sucesso
+
+  // Relacionamentos
+  // students        Student[]
+  // workoutTemplates WorkoutTemplate[]
+  Student  Student[]
+  Exercise Exercise[]
+
+  @@map("personal_trainers")
+}
+
+// Novo modelo para formação acadêmica
+model Education {
+  id                String          @id @default(uuid())
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId String
+  institution       String // Ex: "Universidade de São Paulo"
+  degree            String // Ex: "Bacharelado em Educação Física"
+  startYear         Int
+  endYear           Int?
+  isCurrent         Boolean?
+
+  @@map("educations")
+}
+
+// Novo modelo para certificações
+model Certification {
+  id                String          @id @default(uuid())
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId String
+  name              String // Ex: "CrossFit Level 1"
+  organization      String // Ex: "CrossFit Inc."
+  yearObtained      Int
+  credentialId      String? // Número do registro
+
+  @@map("certifications")
+}
+
+// Enum para formatos de atendimento
+enum TrainingFormat {
+  IN_PERSON // Presencial
+  ONLINE // Aulas online
+  HYBRID // Híbrido
+  NUTRITION_PLAN // Planejamento nutricional
+}
+
+model Student {
+  id                String          @id @default(uuid())
+  userId            String          @unique
+  user              User            @relation(fields: [userId], references: [id])
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId String
+
+  // Informações Biométricas
+  birthDate DateTime? @db.Date
+  gender    Gender?
+  injuries  Injury[]
+
+  // Objetivos
+  targetWeight Float?
+  deadline     DateTime? @db.Date
+
+  // Nível de Experiência
+  workoutDays Int? // Dias/semana disponíveis
+
+  ProgressPhoto ProgressPhoto[]
+  Exercise      Exercise[]
+  Workout       Workout[]
+  Diet          Diet[]
+
+  @@map("students")
+}
+
+// Enums e modelos auxiliares
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum WorkoutType {
+  STRENGTH_TRAINING
+  HIIT
+  CARDIO
+  CROSSFIT
+  CALISTHENICS
+  PILATES
+  YOGA
+  FUNCTIONAL
+}
+
+model Injury {
+  id           String    @id @default(uuid())
+  student      Student   @relation(fields: [studentId], references: [id])
+  studentId    String
+  description  String // Ex: "Lesão no joelho direito"
+  dateOccurred DateTime?
+  recovered    Boolean   @default(false)
+  notes        String? // Ex: "Evitar agachamento profundo"
+
+  @@map("injuries")
+}
+
+model ProgressPhoto {
+  id        String        @id @default(uuid())
+  student   Student       @relation(fields: [studentId], references: [id])
+  studentId String
+  photoUrl  String
+  category  PhotoCategory
+  takenAt   DateTime      @default(now())
+  notes     String?
+
+  @@map("progress_photos")
+}
+
+enum PhotoCategory {
+  FRONT
+  SIDE
+  BACK
+  FLEXED
+  RELAXED
+}
+
+model Exercise {
+  id                String          @id @default(uuid())
+  name              String
+  description       String
+  muscleGroup       String
+  gifUrl            String?
+  imageUrl          String?
+  personalTrainerId String
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  Student           Student?        @relation(fields: [studentId], references: [id])
+  studentId         String?
+  Workout           Workout?        @relation(fields: [workoutId], references: [id])
+  workoutId         String?
+
+  @@map("exercises")
+}
+
+model Workout {
+  id        String      @id @default(uuid())
+  student   Student     @relation(fields: [studentId], references: [id])
+  studentId String
+  name      String
+  type      WorkoutType // Novo campo adicionado
+  date      DateTime    @default(now())
+  exercises Exercise[]
+  completed Boolean     @default(false)
+
+  @@map("workouts")
+}
+
+model Diet {
+  id        String    @id @default(uuid())
+  student   Student   @relation(fields: [studentId], references: [id])
+  studentId String
+  name      String // "Dieta de Bulking", "Low Carb", etc
+  active    Boolean   @default(false)
+  startDate DateTime?
+  endDate   DateTime?
+  meals     Meal[]
+  createdAt DateTime  @default(now())
+
+  @@map("diets")
+}
+
+model Meal {
+  id     String  @id @default(uuid())
+  diet   Diet    @relation(fields: [dietId], references: [id])
+  dietId String
+  name   String // "Café da Manhã", "Pré-Treino"
+  time   String? // "08:00" ou "Antes do Treino"
+  foods  Food[]
+  notes  String? // "Comer 30min antes do treino"
+
+  @@map("meals")
+}
+
+model Food {
+  id       String @id @default(uuid())
+  meal     Meal   @relation(fields: [mealId], references: [id])
+  mealId   String
+  name     String // "Arroz integral", "Whey Protein"
+  quantity String // "1 xícara", "30g"
+  calories Int?
+  protein  Int? // Em gramas
+  carbs    Int? // Em gramas
+  fats     Int? // Em gramas
+
+  @@map("foods")
+}

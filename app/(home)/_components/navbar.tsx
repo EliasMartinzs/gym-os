@@ -27,7 +27,7 @@ const menuLinks = [
   },
   {
     label: "Entrar",
-    href: "/login",
+    href: "/sign-up",
   },
 ];
 
