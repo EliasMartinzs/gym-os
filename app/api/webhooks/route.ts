@@ -1,6 +1,6 @@
 import { Webhook } from "svix";
 import { headers } from "next/headers";
-import { WebhookEvent } from "@clerk/nextjs/server";
+import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -66,6 +66,8 @@ export async function POST(req: Request) {
       }
 
       await prisma.$transaction(async (tx) => {
+        const client = await clerkClient();
+
         const user = await tx.user.create({
           data: {
             id: id,
@@ -75,6 +77,12 @@ export async function POST(req: Request) {
               evt.data.username ||
               (evt.data.last_name as string),
             avatarUrl: evt.data.image_url,
+            role: "PERSONAL_TRAINER",
+          },
+        });
+
+        await client.users.updateUserMetadata(id as string, {
+          publicMetadata: {
             role: "PERSONAL_TRAINER",
           },
         });

@@ -48,7 +48,7 @@ export const Hero = () => {
         />
 
         <div className="w-3/4 text-center space-y-8 z-50">
-          <h1 className="text-lg lg:text-5xl font-black bg-gradient-to-r from-white via-white to-green-200 text-transparent bg-clip-text">
+          <h1 className="text-lg lg:text-5xl font-black">
             Transforme Seu Corpo com Treinos Inteligentes
           </h1>
 

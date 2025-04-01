@@ -64,72 +64,31 @@
 }
 
 :root {
-  --radius: 0.625rem;
+  --radius: 1rem;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(1 0 0);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.145 0.03 296.8);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --popover-foreground: oklch(0.145 0.03 296.8);
+  --primary: oklch(0.65 0.25 302.1);
+  --primary-foreground: oklch(0.985 0.01 296.8);
+  --secondary: oklch(0.96 0.01 296.8);
+  --secondary-foreground: oklch(0.205 0.03 296.8);
+  --muted: oklch(0.96 0.01 296.8);
+  --muted-foreground: oklch(0.96 0.01 296.8);
+  --accent: oklch(0.96 0.01 296.8);
+  --accent-foreground: oklch(0.205 0.03 296.8);
+  --destructive: oklch(0.65 0.22 27.3);
+  --destructive-foreground: oklch(0.985 0.01 296.8);
+  --border: oklch(1 0 0 / 30%);
+  --input: oklch(0.92 0.01 296.8);
+  --ring: oklch(0.65 0.25 302.1);
+  --chart-1: oklch(0.72 0.18 41.1);
+  --chart-2: oklch(0.65 0.12 184.7);
+  --chart-3: oklch(0.45 0.07 227.4);
+  --chart-4: oklch(0.83 0.19 84.4);
+  --chart-5: oklch(0.77 0.19 70.1);
 }
 
 @layer base {
@@ -146,4 +105,22 @@
 
   /* Ajuste para suavizar a transição */
   mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.background {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1500' height='600' preserveAspectRatio='none' viewBox='0 0 1500 600'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1176%26quot%3b)' fill='none'%3e%3crect width='1500' height='600' x='0' y='0' fill='rgba(124%2c 58%2c 237%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c365.916C98.153%2c374.219%2c196.374%2c487.689%2c280.716%2c436.802C364.178%2c386.446%2c308.921%2c248.121%2c345.196%2c157.646C378.888%2c73.614%2c500.985%2c19.326%2c483.734%2c-69.55C466.241%2c-159.673%2c341.034%2c-176.057%2c269.302%2c-233.352C213.311%2c-278.074%2c176.167%2c-345.904%2c108.439%2c-369.311C39.241%2c-393.225%2c-33.562%2c-367.23%2c-106.67%2c-363.285C-204.84%2c-357.987%2c-324.127%2c-410.429%2c-394.861%2c-342.149C-464.1%2c-275.311%2c-407.794%2c-155.852%2c-420.394%2c-60.444C-432.797%2c33.477%2c-501.389%2c125.095%2c-468.288%2c213.86C-434.976%2c303.192%2c-342.446%2c362.311%2c-251.766%2c391.756C-169.868%2c418.349%2c-85.801%2c358.658%2c0%2c365.916' fill='%23732dec'%3e%3c/path%3e%3cpath d='M1500 1299.144C1627.414 1280.213 1705.086 1156.2640000000001 1806.21 1076.472 1896.196 1005.469 1998.606 952.31 2061.232 856.306 2130.728 749.77 2210.038 625.916 2180.886 502.103 2151.804 378.58799999999997 2006.88 328.094 1916.008 239.527 1834.367 159.957 1781.093 46.596000000000004 1673.848 7.927000000000021 1564.345-31.55600000000004 1440.135-14.908000000000015 1332.364 29.085000000000036 1230.24 70.77300000000002 1170.286 168.88099999999997 1091.196 245.76999999999998 1003.461 331.064 866.934 385.577 842.367 505.447 817.772 625.456 920.785 729.887 968.89 842.55 1018.446 958.61 1033.445 1094.8 1129.1399999999999 1177.069 1229.8690000000001 1263.665 1368.607 1318.6660000000002 1500 1299.144' fill='%238548ee'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1176'%3e%3crect width='1500' height='600' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.cl-userButtonAvatarBox {
+  width: 64px !important;
+  height: 64px !important;
 }

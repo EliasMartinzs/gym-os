@@ -4,7 +4,6 @@ import "./globals.css";
 import { QueryProvider } from "@/providers/query-client-provider";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ptBR } from "@clerk/localizations";
-import { dark } from "@clerk/themes";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,13 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider
-      localization={ptBR}
-      appearance={{
-        baseTheme: dark,
-      }}
-    >
-      <html lang="en">
+    <ClerkProvider localization={ptBR}>
+      <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
