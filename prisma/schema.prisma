@@ -1,0 +1,507 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// prisma/schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // uncomment next line if you use Prisma <5.10
+  // directUrl = env("DATABASE_URL_UNPOOLED")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum WorkoutType {
+  STRENGTH_TRAINING
+  HIIT
+  CARDIO
+  CROSSFIT
+  CALISTHENICS
+  PILATES
+  YOGA
+  FUNCTIONAL
+}
+
+enum GoalStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  ABANDONED
+}
+
+enum FitnessGoal {
+  FAT_LOSS
+  MUSCLE_GAIN
+  BODY_RECOMPOSITION
+  STRENGTH_GAIN
+  ENDURANCE_IMPROVEMENT
+  INJURY_RECOVERY
+  POSTURE_CORRECTION
+  FUNCTIONAL_FITNESS
+  DEFINITION
+  COMPETITION_PREP
+}
+
+enum PhotoCategory {
+  FRONT
+  SIDE
+  BACK
+  FLEXED
+  RELAXED
+}
+
+enum TrainingFormat {
+  IN_PERSON // Presencial
+  ONLINE // Aulas online
+  HYBRID // Híbrido
+  NUTRITION_PLAN // Planejamento nutricional
+}
+
+enum Status {
+  ACTIVE // Aluno ou treino ativo
+  INACTIVE // Aluno ou treino inativo
+  PENDING // Aguardando alguma ação (ex: aguardando próximo treino)
+  COMPLETED // Treino ou objetivo concluído
+  IN_PROGRESS // Treino ou objetivo em andamento
+  ON_HOLD // Em espera, pode ser temporário
+}
+
+enum Role {
+  PERSONAL_TRAINER
+  STUDENT
+}
+
+enum SessionStatus {
+  SCHEDULED   @map("agendada")
+  CONFIRMED   @map("confirmada")
+  IN_PROGRESS @map("em_andamento")
+  COMPLETED   @map("concluída")
+  CANCELED    @map("cancelada")
+  MISSED      @map("não_compareceu")
+}
+
+enum SessionType {
+  PERSONAL_TRAINING @map("treino_personalizado")
+  NUTRITION         @map("nutrição")
+  ASSESSMENT        @map("avaliação")
+  FOLLOW_UP         @map("acompanhamento")
+}
+
+enum AttachmentType {
+  EXERCISE_LIST  @map("lista_exercicios")
+  DIET_PLAN      @map("plano_alimentar")
+  PROGRESS_PHOTO @map("foto_progresso")
+  NOTE           @map("anotação")
+}
+
+enum RecurrencePattern {
+  DAILY    @map("diário")
+  WEEKLY   @map("semanal")
+  BIWEEKLY @map("quinzenal")
+  MONTHLY  @map("mensal")
+  CUSTOM   @map("personalizado")
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum MuscleGroup {
+  // Membros Superiores
+  CHEST // Peitoral
+  UPPER_CHEST // Peitoral superior
+  LOWER_CHEST // Peitoral inferior
+  BACK // Costas (geral)
+  LATS // Latíssimo do dorsi
+  TRAPS // Trapézio
+  RHOMBOIDS // Romboides
+  LOWER_BACK // Lombar
+  SHOULDERS // Deltóides (geral)
+  FRONT_DELTS // Deltóide anterior
+  SIDE_DELTS // Deltóide lateral
+  REAR_DELTS // Deltóide posterior
+  BICEPS // Bíceps braquial
+  TRICEPS // Tríceps
+  FOREARMS // Antebraços
+
+  // Core (Núcleo)
+  ABS // Reto abdominal
+  OBLIQUES // Oblíquos
+  TRANSVERSE_ABS // Transverso abdominal
+  ERECTORS // Eretores da espinha
+
+  // Membros Inferiores
+  QUADS // Quadríceps
+  HAMSTRINGS // Isquiotibiais
+  GLUTES // Glúteos (máx/méd/mín)
+  ADDUCTORS // Adutores
+  ABDUCTORS // Abdutores
+  CALVES // Panturrilhas
+  TIBIALIS // Tibial anterior
+
+  // Corpo Inteiro
+  FULL_BODY // Exercícios multiarticulares
+  CARDIO // Grupos usados em cardio
+  POSTERIOR_CHAIN // Cadeia posterior
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  avatarUrl String?
+  role      Role     @default(PERSONAL_TRAINER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personalTrainer PersonalTrainer?
+  student         Student?
+
+  @@map("users")
+}
+
+model PersonalTrainer {
+  id                      String                    @id @default(uuid())
+  userId                  String                    @unique
+  user                    User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio                     String?
+  specialties             String[] // Ex: ["Musculação", "Reabilitação"]
+  experienceYears         Int?
+  education               Education[]
+  certifications          Certification[]
+  trainingPhilosophy      String? // Sua abordagem filosófica
+  availableFormats        TrainingFormat[]
+  instagram               String?
+  website                 String?
+  student                 Student[]
+  exercise                Exercise[]
+  Session                 Session[]
+  WorkoutTemplate         WorkoutTemplate[]
+  AssignedWorkoutTemplate AssignedWorkoutTemplate[]
+
+  @@map("personal_trainers")
+}
+
+model Education {
+  id                String          @id @default(uuid())
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId String
+  institution       String // Ex: "Universidade de São Paulo"
+  degree            String // Ex: "Bacharelado em Educação Física"
+  startYear         Int
+  endYear           Int?
+  isCurrent         Boolean?
+
+  @@map("educations")
+}
+
+model Certification {
+  id                String          @id @default(uuid())
+  personalTrainer   PersonalTrainer @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId String
+  name              String
+  organization      String
+  yearObtained      Int
+  credentialId      String?
+
+  @@map("certifications")
+}
+
+model Student {
+  id                      String                    @id @default(uuid())
+  userId                  String                    @unique
+  user                    User                      @relation(fields: [userId], references: [id])
+  personalTrainer         PersonalTrainer           @relation(fields: [personalTrainerId], references: [id])
+  personalTrainerId       String
+  birthDate               DateTime?                 @db.Date
+  gender                  Gender?
+  injuries                Injury[]
+  trainingFormat          TrainingFormat
+  status                  Status
+  workoutDays             Int?
+  progressPhoto           ProgressPhoto[]
+  exercise                Exercise[]
+  diet                    Diet[]
+  goal                    Goal[]
+  session                 Session[]
+  workoutTemplate         WorkoutTemplate[]
+  AssignedWorkoutTemplate AssignedWorkoutTemplate[]
+
+  @@map("students")
+}
+
+model Recurrence {
+  id         String            @id @default(uuid())
+  session    Session           @relation(fields: [sessionId], references: [id])
+  sessionId  String            @unique
+  pattern    RecurrencePattern
+  interval   Int               @default(1) // Ex: 2 = a cada 2 semanas
+  endAfter   Int? // Número de ocorrências
+  endDate    DateTime? // Data final
+  exceptions DateTime[] // Datas canceladas
+
+  @@map("recurrences")
+}
+
+model Goal {
+  id        String  @id @default(uuid())
+  student   Student @relation(fields: [studentId], references: [id])
+  studentId String
+
+  type      FitnessGoal
+  isPrimary Boolean     @default(false)
+
+  targetValue       Float?
+  currentValue      Float?
+  measurementMethod String? // "bioimpedância", "fita métrica", etc
+
+  startDate DateTime   @default(now())
+  deadline  DateTime?
+  progress  Float?
+  status    GoalStatus @default(ACTIVE)
+
+  notes Note[]
+
+  // Sistema
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([studentId, type])
+  @@map("goals")
+}
+
+model Note {
+  id        String   @id @default(uuid())
+  goal      Goal     @relation(fields: [goalId], references: [id])
+  goalId    String
+  content   String
+  createdAt DateTime @default(now())
+
+  @@map("goal_notes")
+}
+
+model Injury {
+  id           String    @id @default(uuid())
+  student      Student   @relation(fields: [studentId], references: [id])
+  studentId    String
+  description  String // Ex: "Lesão no joelho direito"
+  dateOccurred DateTime?
+  recovered    Boolean   @default(false)
+  notes        String? // Ex: "Evitar agachamento profundo"
+
+  @@map("injuries")
+}
+
+model ProgressPhoto {
+  id        String        @id @default(uuid())
+  student   Student       @relation(fields: [studentId], references: [id])
+  studentId String
+  photoUrl  String
+  category  PhotoCategory
+  takenAt   DateTime      @default(now())
+  notes     String?
+
+  @@map("progress_photos")
+}
+
+model WorkoutTemplate {
+  id          String          @id @default(uuid())
+  name        String
+  description String?
+  isReusable  Boolean
+  isPublic    Boolean         @default(false) // Se outros trainers podem ver
+  creator     PersonalTrainer @relation(fields: [trainerId], references: [id])
+  trainerId   String
+  days        WorkoutDay[]
+  createdAt   DateTime        @default(now())
+
+  // Configurações padrão (para templates genéricos)
+  defaultGoal  FitnessGoal[]
+  defaultLevel DifficultyLevel?
+  defaultTags  String[]
+
+  // Relacionamento com instâncias aplicadas
+  assignedInstances AssignedWorkoutTemplate[]
+  student           Student?                  @relation(fields: [studentId], references: [id])
+  studentId         String?
+  session           Session[]
+
+  @@index([trainerId, isPublic])
+  @@map("workout_templates")
+}
+
+model AssignedWorkoutTemplate {
+  id         String          @id @default(uuid())
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id])
+  templateId String
+  student    Student         @relation(fields: [studentId], references: [id])
+  studentId  String
+  trainer    PersonalTrainer @relation(fields: [trainerId], references: [id])
+  trainerId  String
+
+  // Personalizações (sobrescrevem as padrão)
+  customGoal  FitnessGoal[]
+  customLevel DifficultyLevel?
+  customTags  String[]
+  notes       String?
+
+  // Controle temporal
+  startDate DateTime
+  endDate   DateTime?
+  isActive  Boolean   @default(true)
+
+  sessions Session[]
+
+  @@index([studentId, isActive])
+  @@map("assigned_workout_templates")
+}
+
+model WorkoutDay {
+  id                String              @id @default(uuid())
+  template          WorkoutTemplate     @relation(fields: [templateId], references: [id])
+  templateId        String
+  name              String // "Treino A", "Push Day"
+  dayOfWeek         DayOfWeek? // Nullable para templates rápidos
+  order             Int // Ordenação dos dias
+  focusMuscle       MuscleGroup[]
+  exercises         Exercise[]
+  exerciseInWorkout ExerciseInWorkout[]
+
+  @@map("workout_days")
+}
+
+model ExerciseInWorkout {
+  id         String     @id @default(uuid())
+  workoutDay WorkoutDay @relation(fields: [dayId], references: [id])
+  dayId      String
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+  exerciseId String
+  order      Int
+  sets       Int
+  reps       String
+  rest       Int?
+
+  @@map("exercise_in_workout")
+}
+
+model Exercise {
+  id                String              @id @default(uuid())
+  name              String
+  type              String
+  muscle            String
+  equipment         String
+  difficulty        String
+  instructions      String
+  personalTrainerId String
+  personalTrainer   PersonalTrainer     @relation(fields: [personalTrainerId], references: [id])
+  student           Student?            @relation(fields: [studentId], references: [id])
+  studentId         String?
+  workoutDay        WorkoutDay?         @relation(fields: [workoutDayId], references: [id])
+  workoutDayId      String?
+  exerciseInWorkout ExerciseInWorkout[]
+
+  @@map("exercises")
+}
+
+model Session {
+  id          String              @id @default(uuid())
+  student     Student             @relation(fields: [studentId], references: [id])
+  studentId   String
+  trainer     PersonalTrainer     @relation(fields: [trainerId], references: [id])
+  trainerId   String
+  startAt     DateTime            @db.Timestamp(6)
+  endAt       DateTime            @db.Timestamp(6)
+  location    String?
+  status      SessionStatus       @default(SCHEDULED)
+  type        SessionType
+  recurrence  Recurrence?
+  notes       String?             @db.Text
+  attachments SessionAttachment[]
+
+  createdAt  DateTime  @default(now()) @db.Timestamp(6)
+  updatedAt  DateTime  @updatedAt @db.Timestamp(6)
+  canceledAt DateTime? @db.Timestamp(6)
+
+  workout                   WorkoutTemplate?         @relation(fields: [workoutId], references: [id])
+  workoutId                 String?
+  AssignedWorkoutTemplate   AssignedWorkoutTemplate? @relation(fields: [assignedWorkoutTemplateId], references: [id])
+  assignedWorkoutTemplateId String?
+
+  @@index([studentId, startAt])
+  @@index([trainerId, startAt])
+  @@map("sessions")
+}
+
+model SessionAttachment {
+  id        String         @id @default(uuid())
+  session   Session        @relation(fields: [sessionId], references: [id])
+  sessionId String
+  url       String
+  type      AttachmentType
+  createdAt DateTime       @default(now())
+
+  @@map("session_attachments")
+}
+
+model Diet {
+  id        String    @id @default(uuid())
+  student   Student   @relation(fields: [studentId], references: [id])
+  studentId String
+  name      String // "Dieta de Bulking", "Low Carb", etc
+  active    Boolean   @default(false)
+  startDate DateTime?
+  endDate   DateTime?
+  meals     Meal[]
+  createdAt DateTime  @default(now())
+
+  @@map("diets")
+}
+
+model Meal {
+  id     String  @id @default(uuid())
+  diet   Diet    @relation(fields: [dietId], references: [id])
+  dietId String
+  name   String // "Café da Manhã", "Pré-Treino"
+  time   String? // "08:00" ou "Antes do Treino"
+  foods  Food[]
+  notes  String? // "Comer 30min antes do treino"
+
+  @@map("meals")
+}
+
+model Food {
+  id       String @id @default(uuid())
+  meal     Meal   @relation(fields: [mealId], references: [id])
+  mealId   String
+  name     String // "Arroz integral", "Whey Protein"
+  quantity String // "1 xícara", "30g"
+  calories Int?
+  protein  Int? // Em gramas
+  carbs    Int? // Em gramas
+  fats     Int? // Em gramas
+
+  @@map("foods")
+}

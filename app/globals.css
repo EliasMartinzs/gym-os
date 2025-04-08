@@ -1,0 +1,183 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
+  }
+}
+
+:root {
+  --radius: 1rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0 0 0);
+  --card: oklch(1 0 0 / 5%);
+  --card-foreground: oklch(0.141 0.005 285.823);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.141 0.005 285.823);
+  --primary: oklch(0.606 0.25 292.717);
+  --primary-foreground: oklch(0.969 0.016 293.756);
+  --secondary: oklch(0.967 0.001 286.375);
+  --secondary-foreground: oklch(0.21 0.006 285.885);
+  --muted: oklch(0.967 0.001 286.375);
+  --muted-foreground: oklch(1 0 0 / 50%);
+  --accent: oklch(0.967 0.001 286.375);
+  --accent-foreground: oklch(0.21 0.006 285.885);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.92 0.004 286.32 / 25%);
+  --input: oklch(0.92 0.004 286.32 / 25%);
+  --ring: oklch(0.606 0.25 292.717);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.141 0.005 285.823);
+  --sidebar-primary: oklch(0.606 0.25 292.717);
+  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+  --sidebar-accent: oklch(0.967 0.001 286.375);
+  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
+  --sidebar-border: oklch(0.92 0.004 286.32);
+  --sidebar-ring: oklch(0.606 0.25 292.717);
+}
+
+.dark {
+  --background: oklch(0.141 0.005 285.823);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(1 0 0 / 5%);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.21 0.006 285.885);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.541 0.281 293.009);
+  --primary-foreground: oklch(0.969 0.016 293.756);
+  --secondary: oklch(0.274 0.006 286.033);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.274 0.006 286.033);
+  --muted-foreground: oklch(0.705 0.015 286.067);
+  --accent: oklch(0.274 0.006 286.033);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.541 0.281 293.009);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.21 0.006 285.885);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.541 0.281 293.009);
+  --sidebar-primary-foreground: oklch(0.969 0.016 293.756);
+  --sidebar-accent: oklch(0.274 0.006 286.033);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.541 0.281 293.009);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.responsive-background {
+  @apply fixed inset-0 -z-10 bg-cover bg-center bg-no-repeat;
+
+  /* Light theme - desktop */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1500' height='600' preserveAspectRatio='none' viewBox='0 0 1500 600'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1176%26quot%3b)' fill='none'%3e%3crect width='1500' height='600' x='0' y='0' fill='rgba(124%2c 58%2c 237%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c365.916C98.153%2c374.219%2c196.374%2c487.689%2c280.716%2c436.802C364.178%2c386.446%2c308.921%2c248.121%2c345.196%2c157.646C378.888%2c73.614%2c500.985%2c19.326%2c483.734%2c-69.55C466.241%2c-159.673%2c341.034%2c-176.057%2c269.302%2c-233.352C213.311%2c-278.074%2c176.167%2c-345.904%2c108.439%2c-369.311C39.241%2c-393.225%2c-33.562%2c-367.23%2c-106.67%2c-363.285C-204.84%2c-357.987%2c-324.127%2c-410.429%2c-394.861%2c-342.149C-464.1%2c-275.311%2c-407.794%2c-155.852%2c-420.394%2c-60.444C-432.797%2c33.477%2c-501.389%2c125.095%2c-468.288%2c213.86C-434.976%2c303.192%2c-342.446%2c362.311%2c-251.766%2c391.756C-169.868%2c418.349%2c-85.801%2c358.658%2c0%2c365.916' fill='%23732dec'%3e%3c/path%3e%3cpath d='M1500 1299.144C1627.414 1280.213 1705.086 1156.2640000000001 1806.21 1076.472 1896.196 1005.469 1998.606 952.31 2061.232 856.306 2130.728 749.77 2210.038 625.916 2180.886 502.103 2151.804 378.58799999999997 2006.88 328.094 1916.008 239.527 1834.367 159.957 1781.093 46.596000000000004 1673.848 7.927000000000021 1564.345-31.55600000000004 1440.135-14.908000000000015 1332.364 29.085000000000036 1230.24 70.77300000000002 1170.286 168.88099999999997 1091.196 245.76999999999998 1003.461 331.064 866.934 385.577 842.367 505.447 817.772 625.456 920.785 729.887 968.89 842.55 1018.446 958.61 1033.445 1094.8 1129.1399999999999 1177.069 1229.8690000000001 1263.665 1368.607 1318.6660000000002 1500 1299.144' fill='%238548ee'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1176'%3e%3crect width='1500' height='600' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+}
+
+.responsive-background.dark {
+  /* Dark theme - desktop */
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='1440' height='560' preserveAspectRatio='none' viewBox='0 0 1440 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1098%26quot%3b)' fill='none'%3e%3crect width='1440' height='560' x='0' y='0' fill='rgba(40%2c 0%2c 109%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c521.633C95.854%2c510.852%2c165.983%2c435.309%2c252.973%2c393.633C355.674%2c344.43%2c494.484%2c349.469%2c557.437%2c254.573C620.718%2c159.183%2c594.521%2c29.721%2c568.313%2c-81.711C543.627%2c-186.671%2c492.25%2c-284.684%2c413.328%2c-358.151C339.031%2c-427.313%2c238.505%2c-451.998%2c140.836%2c-479.643C44.093%2c-507.026%2c-53.777%2c-538.945%2c-152.16%2c-518.21C-254.732%2c-496.592%2c-351.343%2c-443.087%2c-417.687%2c-361.928C-483.131%2c-281.87%2c-519.734%2c-177.383%2c-515.222%2c-74.078C-511.044%2c21.589%2c-431.19%2c91.693%2c-394.02%2c179.943C-355.299%2c271.876%2c-367.756%2c389.617%2c-292.392%2c454.972C-215.307%2c521.819%2c-101.393%2c533.037%2c0%2c521.633' fill='%231a0047'%3e%3c/path%3e%3cpath d='M1440 949.3240000000001C1512.526 947.1700000000001 1544.611 855.225 1598.517 806.657 1642.175 767.322 1692.065 738.388 1726.76 690.9590000000001 1768.341 634.117 1822.144 575.885 1818.79 505.538 1815.391 434.256 1754.4189999999999 381.93600000000004 1709.386 326.576 1662.927 269.462 1625.065 188.474 1552.215 177.829 1478.6 167.072 1425.393 247.368 1356.311 274.982 1296.106 299.048 1225.122 289.798 1173.607 329.169 1116.435 372.86400000000003 1059.133 432.869 1055.683 504.744 1052.251 576.256 1115.055 631.044 1156.309 689.557 1190.386 737.891 1231.6970000000001 776.319 1275.313 816.2570000000001 1328.44 864.904 1367.997 951.463 1440 949.3240000000001' fill='%23360093'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1098'%3e%3crect width='1440' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+}
+
+@media (max-width: 768px) {
+  .responsive-background {
+    /* Light theme - mobile */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='640' height='560' preserveAspectRatio='none' viewBox='0 0 640 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1042%26quot%3b)' fill='none'%3e%3crect width='640' height='560' x='0' y='0' fill='rgba(124%2c 58%2c 237%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c269.098C48.585%2c259.598%2c76.852%2c210.68%2c120.997%2c188.275C172.386%2c162.193%2c243.551%2c172.824%2c279.085%2c127.454C315.283%2c81.237%2c325.68%2c10.448%2c302.522%2c-43.496C279.682%2c-96.701%2c204.27%2c-100.557%2c163.537%2c-141.706C126.921%2c-178.696%2c122.951%2c-241.274%2c79.058%2c-269.246C29.95%2c-300.541%2c-35.432%2c-325.76%2c-88.831%2c-302.532C-142.651%2c-279.12%2c-141.646%2c-200.395%2c-180.449%2c-156.36C-219.762%2c-111.746%2c-303.518%2c-103.609%2c-315.452%2c-45.355C-327.238%2c12.177%2c-262.909%2c55.702%2c-234.414%2c107.053C-208.574%2c153.619%2c-199.585%2c212.113%2c-155.778%2c242.396C-111.546%2c272.973%2c-52.773%2c279.417%2c0%2c269.098' fill='%234b10b0'%3e%3c/path%3e%3cpath d='M640 802.633C685.634 798.958 730.7139999999999 785.4159999999999 766.576 756.957 800.591 729.9639999999999 817.0889999999999 688.594 834.065 648.626 850.6179999999999 609.655 874.991 568.672 863.907 527.807 852.991 487.56 801.4739999999999 474.947 777.67 440.70799999999997 749.522 400.221 757.663 332.11400000000003 713.131 310.938 669.979 290.418 622.92 332.23900000000003 576.946 345.259 530.425 358.433 477.997 356.32 441.382 387.89599999999996 402.647 421.3 368.244 470.575 372.53 521.544 376.796 572.275 440.094 595.353 462.666 640.986 484.13800000000003 684.396 463.815 745.829 499.60699999999997 778.455 535.427 811.106 591.688 806.523 640 802.633' fill='%23bb99f6'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1042'%3e%3crect width='640' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  }
+
+  .responsive-background.dark {
+    /* Dark theme - mobile */
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' version='1.1' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns:svgjs='http://svgjs.dev/svgjs' width='640' height='560' preserveAspectRatio='none' viewBox='0 0 640 560'%3e%3cg mask='url(%26quot%3b%23SvgjsMask1111%26quot%3b)' fill='none'%3e%3crect width='640' height='560' x='0' y='0' fill='rgba(40%2c 0%2c 109%2c 1)'%3e%3c/rect%3e%3cpath d='M0%2c281.094C51.964%2c289.866%2c97.324%2c248.521%2c144.037%2c224.126C195.506%2c197.247%2c260.347%2c182.646%2c287.146%2c131.135C314.112%2c79.305%2c297.52%2c15.742%2c281.716%2c-40.505C267.34%2c-91.67%2c236.445%2c-134.561%2c201.293%2c-174.422C166.411%2c-213.977%2c131.122%2c-260.298%2c79.293%2c-270.046C28.408%2c-279.616%2c-16.298%2c-239.286%2c-65.975%2c-224.689C-115.638%2c-210.096%2c-177.299%2c-222.074%2c-212.65%2c-184.262C-248.06%2c-146.388%2c-243.944%2c-86.831%2c-243.333%2c-34.986C-242.792%2c10.922%2c-232.748%2c56.106%2c-209.351%2c95.608C-187.482%2c132.53%2c-147.964%2c151.8%2c-115.845%2c180.258C-76.735%2c214.91%2c-51.524%2c272.397%2c0%2c281.094' fill='%231a0047'%3e%3c/path%3e%3cpath d='M640 875.049C699.34 882.36 759.9639999999999 856.673 806.675 819.352 851.193 783.783 881.862 730.844 890.902 674.583 899.001 624.182 863.473 579.354 853.277 529.335 843.876 483.216 855.0550000000001 434.212 833.386 392.43 808.448 344.344 771.544 301.567 722.849 277.841 669.592 251.892 607.978 240.98899999999998 550.296 254.49599999999998 491.094 268.358 439.153 305.58000000000004 401.27099999999996 353.14 364.269 399.596 335.559 457.913 341.184 517.037 346.496 572.872 401.481 607.619 430.074 655.87 454.796 697.5889999999999 464.238 746.275 497.781 781.297 537.8679999999999 823.1510000000001 582.481 867.963 640 875.049' fill='%23360093'%3e%3c/path%3e%3c/g%3e%3cdefs%3e%3cmask id='SvgjsMask1111'%3e%3crect width='640' height='560' fill='white'%3e%3c/rect%3e%3c/mask%3e%3c/defs%3e%3c/svg%3e");
+  }
+}
+
+.sombra-mesclada {
+  filter: drop-shadow(0 15px 10px rgba(0, 0, 0, 0.3));
+
+  /* Ajuste para suavizar a transição */
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+}
+
+.cl-userButtonAvatarBox {
+  width: 64px !important;
+  height: 64px !important;
+}
+
+.shadow-4xl {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
