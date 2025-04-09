@@ -22,7 +22,7 @@ export default function StudentsPersonal() {
       </div>
       <Card>
         <CardContent>
-          <DataTable columns={columns} data={fakeUsers} />
+          <DataTable columns={columns} />
         </CardContent>
       </Card>
 

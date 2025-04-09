@@ -111,11 +111,14 @@ export const NewStudentSchema = z.object({
   email: z.string().email({
     message: "Insira um email",
   }),
+  password: z.string().min(6, {
+    message: "Insira a senha, minímo 6 caracteres",
+  }),
   name: z.string().min(4, {
     message: "Ínsira um nome",
   }),
   phone: z.string().optional(),
-  birthDate: z.date().optional(),
+  birthDate: z.coerce.date(),
   role: z.nativeEnum(Role).default("STUDENT"),
   injuries: z.array(z.string()),
   status: z.nativeEnum(Status).default("ACTIVE"),

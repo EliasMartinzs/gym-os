@@ -10,8 +10,9 @@ generator client {
 
 // prisma/schema.prisma
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
   // uncomment next line if you use Prisma <5.10
   // directUrl = env("DATABASE_URL_UNPOOLED")
 }
@@ -188,11 +189,11 @@ model PersonalTrainer {
   userId                  String                    @unique
   user                    User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
   bio                     String?
-  specialties             String[] // Ex: ["Musculação", "Reabilitação"]
+  specialties             String[]
   experienceYears         Int?
   education               Education[]
   certifications          Certification[]
-  trainingPhilosophy      String? // Sua abordagem filosófica
+  trainingPhilosophy      String?
   availableFormats        TrainingFormat[]
   instagram               String?
   website                 String?
@@ -233,7 +234,7 @@ model Certification {
 model Student {
   id                      String                    @id @default(uuid())
   userId                  String                    @unique
-  user                    User                      @relation(fields: [userId], references: [id])
+  user                    User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
   personalTrainer         PersonalTrainer           @relation(fields: [personalTrainerId], references: [id])
   personalTrainerId       String
   birthDate               DateTime?                 @db.Date

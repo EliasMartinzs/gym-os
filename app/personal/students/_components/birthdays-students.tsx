@@ -1,21 +1,18 @@
 "use client";
 import { useState } from "react";
 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
 } from "@/components/ui/pagination";
+import { formatDate } from "@/lib/utils";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { fakeUsers } from "../students";
-import { formatDate } from "@/lib/utils";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 export const BirthdayStudents = () => {
   const users = fakeUsers;

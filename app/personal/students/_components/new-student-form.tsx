@@ -17,17 +17,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { newStudent } from "@/features/personal/student/api/new-student";
 import { SelectOptions } from "@/lib/enum-tranlations";
 import { cn, parseDateString } from "@/lib/utils";
 import { NewStudenFormValues, NewStudentSchema } from "@/lib/validations";
-import CreateStudentImg from "@/public/undraw_create_8val.svg";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputMask } from "@react-input/mask";
-import { X } from "lucide-react";
-import Image from "next/image";
-import { useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { Loader2, X } from "lucide-react";
+import { useFieldArray, useForm } from "react-hook-form";
 
-export const NewStudentForm = () => {
+type Props = {
+  setClose: () => void;
+};
+
+export const NewStudentForm = ({ setClose }: Props) => {
   const form = useForm<NewStudenFormValues>({
     resolver: zodResolver(NewStudentSchema),
     defaultValues: {
@@ -39,6 +42,7 @@ export const NewStudentForm = () => {
       injuries: [],
       role: "STUDENT",
       status: "ACTIVE",
+      password: "",
     },
   });
 
@@ -47,13 +51,22 @@ export const NewStudentForm = () => {
     name: "injuries" as never,
   });
 
+  const mutation = newStudent();
+
   function onSubmit(values: NewStudenFormValues) {
-    console.log(values);
+    mutation.mutate(values, {
+      onSuccess: () => {
+        form.reset(), setClose();
+      },
+    });
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 overflow-y-auto"
+      >
         <FormField
           control={form.control}
           name="name"
@@ -80,6 +93,20 @@ export const NewStudentForm = () => {
                   type="email"
                   {...field}
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="password"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Senha</FormLabel>
+              <FormControl>
+                <Input placeholder="******" type="password" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -230,8 +257,12 @@ export const NewStudentForm = () => {
           />
         </div>
 
-        <Button size="full" type="submit">
-          Criar novo aluno
+        <Button size="full" type="submit" disabled={mutation.isPending}>
+          {mutation.isPending ? (
+            <Loader2 className="size-5 animate-spin" />
+          ) : (
+            "Criar novo aluno"
+          )}
         </Button>
       </form>
     </Form>

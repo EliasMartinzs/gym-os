@@ -1,10 +1,14 @@
+"use client";
+
 import { ResponsiveModal } from "@/components/reusable/responsive-modal";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import React from "react";
 import { NewStudentForm } from "./new-student-form";
+import { useStudent } from "@/features/personal/student/hooks/use-student";
 
 export const NewStudent = () => {
+  const { open, setOpen, setClose } = useStudent();
   return (
     <ResponsiveModal
       trigger={
@@ -14,9 +18,10 @@ export const NewStudent = () => {
       }
       key={"new-student"}
       title="Novo estudante"
-      className="overflow-hidden"
+      open={open}
+      setOpen={setOpen}
     >
-      <NewStudentForm />
+      <NewStudentForm setClose={setClose} />
     </ResponsiveModal>
   );
 };

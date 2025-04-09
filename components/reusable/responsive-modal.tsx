@@ -27,6 +27,8 @@ interface WorkoutEditProps {
   description?: string;
   children: React.ReactNode;
   className?: string;
+  open: boolean;
+  setOpen: (state: boolean) => void;
 }
 
 export const ResponsiveModal = ({
@@ -35,8 +37,9 @@ export const ResponsiveModal = ({
   trigger,
   description,
   className,
+  open,
+  setOpen,
 }: WorkoutEditProps) => {
-  const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isDesktop) {
@@ -45,7 +48,7 @@ export const ResponsiveModal = ({
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent
           className={cn(
-            "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 overflow-y-auto max-lg:px-4",
+            "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4",
             className
           )}
         >
@@ -64,7 +67,7 @@ export const ResponsiveModal = ({
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent
         className={cn(
-          "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 overflow-y-auto max-lg:px-4",
+          "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4",
           className
         )}
       >
