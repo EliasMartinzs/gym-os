@@ -52,3 +52,61 @@ export function parseDateString(dateString: string): Date | undefined {
 
   return isValidDate ? date : undefined;
 }
+
+/**
+ * Calculates the duration between a given date and the current date in a human-readable format.
+ * @param {Date | string} createdAt - The start date (can be a Date object or ISO string)
+ * @returns {string} A human-readable duration string (e.g., "2 years and 3 months", "5 days", "1 month")
+ * @example
+ * // returns "3 days"
+ * calculateDuration(new Date(Date.now() - 3 * 24 * 60 * 60 * 1000));
+ *
+ * // returns "1 year and 2 months"
+ * calculateDuration("2022-01-15T00:00:00Z");
+ */
+export function calculateDuration(createdAt: Date | string): number {
+  const now = new Date();
+  const createdDate =
+    typeof createdAt === "string" ? new Date(createdAt) : createdAt;
+
+  if (isNaN(createdDate.getTime())) {
+    throw new Error("Invalid date provided to calculateDuration");
+  }
+
+  const diffInMs = now.getTime() - createdDate.getTime();
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  return diffInDays;
+}
+
+/**
+ * Formats a duration in days into a human-readable string.
+ * @param {number} days - The number of days to format
+ * @returns {string} Formatted duration string
+ * @private
+ */
+export function formatDurationFromDays(days: number): string {
+  if (days < 0) {
+    return "future date";
+  }
+
+  if (days < 30) {
+    return `${days} dia${days !== 1 ? "s" : ""}`;
+  }
+
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return `${months} mês${months !== 1 ? "s" : ""}`;
+  }
+
+  const years = Math.floor(months / 12);
+  const remainingMonths = months % 12;
+
+  if (remainingMonths === 0) {
+    return `${years} ano${years !== 1 ? "s" : ""}`;
+  }
+
+  return `${years} ano${years !== 1 ? "s" : ""} e ${remainingMonths} mês${
+    remainingMonths !== 1 ? "s" : ""
+  }`;
+}

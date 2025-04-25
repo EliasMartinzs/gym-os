@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { Loader2, TrendingUp } from "lucide-react";
 import { Pie, PieChart, TooltipProps } from "recharts";
 
 import {
@@ -17,15 +17,13 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { useMemo } from "react";
+import { getTopExercises } from "@/features/personal/student/api/top-exercises";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
+import { NoData } from "../../../components/reusable/no-data";
 
 const chartConfig = {} satisfies ChartConfig;
-
-interface Props {
-  chartData: {
-    name: string;
-    count: number;
-  }[];
-}
 
 const CustomChartTootlip = ({
   active,
@@ -42,13 +40,33 @@ const CustomChartTootlip = ({
   return null;
 };
 
-export function TopExercisesChart({ chartData }: Props) {
-  const data = useMemo(() => {
-    return chartData.map((d, i) => ({
-      ...d,
-      fill: `var(--chart-${i + 1})`,
-    }));
-  }, [chartData]);
+export function TopExercisesChart() {
+  const { data, isLoading, isError } = getTopExercises();
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-full grid place-items-center">
+        <Loader2 className="size-6 animate-spin" />
+      </div>
+    );
+  }
+  if (isError) return;
+  if (!data?.data || data.data.length === 0) {
+    return (
+      <NoData
+        title="Parece que você ainda não prescreveu exercícios para seus alunos... mas tudo bem!"
+        description="Aqui é onde você verá um ranking dos exercícios mais usados nos treinos — assim que começar a criar rotinas, o gráfico aparecerá automaticamente!"
+        extra={[
+          "✅ Explore nossa biblioteca de exercícios.",
+          "✅ Crie treinos personalizados para cada aluno.",
+          "✅ Volte aqui depois para acompanhar seus top 5!",
+        ]}
+        href="/personal/workouts"
+        link="Ir para meus exercícios"
+        key="TopExercisesChart"
+      />
+    );
+  }
 
   return (
     <Card>
@@ -64,7 +82,7 @@ export function TopExercisesChart({ chartData }: Props) {
           <PieChart>
             <ChartTooltip content={<CustomChartTootlip />} />
             <Pie
-              data={data}
+              data={data.data}
               dataKey="count"
               label
               nameKey="name"

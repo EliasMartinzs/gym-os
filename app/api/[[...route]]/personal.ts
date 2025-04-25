@@ -1,122 +1,491 @@
-import { prisma } from "@/lib/db";
+import { getPersonalTrainerById } from "@/actions/personal";
+import prisma from "@/lib/db";
+import { EnumTranslations } from "@/lib/enum-tranlations";
+import { calculateDuration } from "@/lib/utils";
 import { NewStudentSchema } from "@/lib/validations";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
+import { TrainingFormat } from "@prisma/client";
 import { Hono } from "hono";
 import { z } from "zod";
 
 const app = new Hono()
-  .get(
-    "/analytics",
-    clerkMiddleware(),
-    zValidator(
-      "param",
-      z.object({
-        dataType: z
-          .enum(["all", "birthdays", "counts"])
-          .optional()
-          .default("all"),
-      })
-    ),
-    async (c) => {
-      const auth = getAuth(c);
-      const { dataType } = c.req.valid("param");
+  .get("genders", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
 
-      if (!auth?.userId) {
-        return c.json(
-          {
-            success: false,
-            data: null,
-            message: "Usuário não autenticado",
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const genderCount = await prisma.student.groupBy({
+        by: ["gender"],
+        where: {
+          personalTrainerId: personalTrainer?.id,
+        },
+        _count: {
+          gender: true,
+        },
+      });
+
+      const result = {
+        MALE: genderCount.find((g) => g.gender === "MALE")?._count.gender || 0,
+        FEMALE:
+          genderCount.find((g) => g.gender === "FEMALE")?._count.gender || 0,
+      };
+
+      return c.json({
+        success: true,
+        message: null,
+        data: result,
+      });
+    } catch (error: any) {
+      console.log(error);
+
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("birthdate", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const today = new Date();
+      const month = today.getMonth() + 1; // getMonth() retorna 0-11
+      const day = today.getDate();
+
+      const students = await prisma.student.findMany({
+        where: {
+          birthDate: {
+            not: null,
           },
-          401
-        );
-      }
+        },
+        include: {
+          user: true,
+        },
+      });
 
-      try {
-        if (dataType === "birthdays") {
-          const today = new Date();
+      const birthdayUsers = students
+        .filter((student) => {
+          if (!student.birthDate) return false;
+          const birthDate = new Date(student.birthDate);
+          return (
+            birthDate.getDate() === day && birthDate.getMonth() + 1 === month
+          );
+        })
+        .map((student) => student.user);
 
-          const users = await prisma.user.findMany({
+      return c.json({
+        success: true,
+        message: null,
+        data: birthdayUsers,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return c.json({
+        success: false,
+        message: `Houve um erro, ${error.message}`,
+        data: null,
+      });
+    }
+  })
+  .get("status", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainerId = await getPersonalTrainerById(auth.userId);
+
+      const statusCounts = await prisma.student.groupBy({
+        by: ["status"],
+        _count: {
+          status: true,
+        },
+        where: {
+          personalTrainerId: personalTrainerId?.id,
+        },
+      });
+
+      const result = statusCounts.map(({ status, _count }, index) => ({
+        name: EnumTranslations.Status[status],
+        count: _count.status,
+        fill: `var(--chart-${index + 1})`,
+      }));
+
+      return c.json({
+        success: true,
+        message: "Status retornado com sucesso",
+        data: result,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json({
+        success: false,
+        message:
+          error.message || "Houve um erro ao buscar estudantes por status",
+        data: null,
+      });
+    }
+  })
+  .get("duration", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const students = await prisma.student.findMany({
+        where: {
+          personalTrainer: {
+            id: personalTrainer?.id,
+          },
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        include: {
+          user: true,
+        },
+      });
+
+      const studentsWithDuration = students.map((student, index) => ({
+        name: student.user.name,
+        durationAsStudent: calculateDuration(student.createdAt),
+      }));
+
+      return c.json({
+        success: true,
+        message: null,
+        data: studentsWithDuration,
+      });
+    } catch (error: any) {
+      console.error(error);
+      return c.json({
+        success: false,
+        message: `Houve um erro, ${error.message}`,
+        data: null,
+      });
+    }
+  })
+  .get("last-students", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const data = await prisma.student.findMany({
+        where: {
+          personalTrainerId: personalTrainer?.id,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          user: {
             select: {
               name: true,
               avatarUrl: true,
-              student: {
-                select: {
-                  birthDate: true,
-                },
-              },
-            },
-            where: {
-              student: {
-                birthDate: {
-                  not: null,
-                  equals: new Date(
-                    today.getFullYear(),
-                    today.getMonth(),
-                    today.getDate()
-                  ),
-                },
-              },
-            },
-          });
-
-          return c.json({
-            success: true,
-            message: null,
-            data: users,
-          });
-        }
-
-        if (dataType === "counts") {
-          const counts = await prisma.user.groupBy({
-            by: ["role"],
-            _count: true,
-          });
-
-          return c.json({
-            success: true,
-            message: null,
-            data: counts,
-          });
-        }
-
-        const personalTrainer = await prisma.personalTrainer.findFirst({
-          select: {
-            id: true,
-          },
-          where: {
-            userId: auth.userId,
-          },
-        });
-
-        const users = await prisma.user.findMany({
-          where: {
-            personalTrainer: {
-              id: personalTrainer?.id,
+              phone: true,
             },
           },
-        });
+        },
+        take: 5,
+      });
 
-        return c.json({
-          success: true,
-          message: null,
-          data: users,
-        });
-      } catch (err: any) {
-        console.error(err);
+      return c.json({
+        success: true,
+        message: null,
+        data: data,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("top-exercises", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const topExercises = await prisma.exerciseInWorkout.groupBy({
+        by: ["exerciseId"], // Agrupa pelo ID do exercício
+        _count: {
+          exerciseId: true, // Conta quantas vezes o exercício aparece em workouts
+        },
+        where: {
+          exercise: {
+            personalTrainerId: personalTrainer?.id, // Filtra apenas exercícios do personal trainer
+          },
+        },
+        orderBy: {
+          _count: {
+            exerciseId: "desc", // Ordena do mais usado para o menos usado
+          },
+        },
+        take: 5, // Pega os 5 mais frequentes
+      });
+
+      // Busca apenas os nomes dos exercícios
+      const exercisesWithNames = await prisma.exercise.findMany({
+        where: {
+          id: {
+            in: topExercises.map((e) => e.exerciseId), // Filtra pelos IDs dos top 5
+          },
+        },
+        select: {
+          id: true,
+          name: true, // Seleciona apenas o nome
+        },
+      });
+
+      // Combina os dados: nome do exercício + contagem
+      const result = topExercises.map((exercise) => {
+        const exerciseName =
+          exercisesWithNames.find((e) => e.id === exercise.exerciseId)?.name ||
+          "Unknown";
+        return {
+          name: exerciseName,
+          count: exercise._count.exerciseId,
+        };
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: result,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("format", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const formatsCount = await prisma.student.groupBy({
+        by: ["trainingFormat"],
+        where: {
+          personalTrainerId: personalTrainer?.id,
+        },
+        _count: {
+          trainingFormat: true,
+        },
+      });
+
+      const allFormats = Object.values(TrainingFormat);
+      const result = allFormats.map((format, i) => {
+        const found = formatsCount.find(
+          (item) => item.trainingFormat === format
+        );
+
+        return {
+          name: EnumTranslations.TrainingFormat[format],
+          count: found?._count?.trainingFormat || 0,
+          fill: `var(--chart-${i + 1})`,
+        };
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: result,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("workouts", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const workouts = await prisma.workoutTemplate.findMany({
+        where: {
+          trainerId: personalTrainer?.id,
+          AND: {
+            isReusable: true,
+          },
+        },
+        include: {
+          assignedInstances: true,
+          creator: true,
+          days: {
+            include: {
+              exerciseInWorkout: true,
+              exercises: true,
+              template: true,
+            },
+          },
+          session: true,
+          student: true,
+        },
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: workouts,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("students/:param", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+    const param = c.req.param("param");
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      if (!personalTrainer?.id) {
         return c.json({
           success: false,
+          message: "Nenhum personal trainer encontrado!",
           data: null,
-          message: "Houve um erro ao buscar os dados",
         });
       }
+
+      const baseQuery = {
+        where: { personalTrainerId: personalTrainer.id },
+        include: { user: true },
+      };
+
+      const students =
+        param === "user"
+          ? await prisma.student.findMany({
+              ...baseQuery,
+              include: {
+                ...baseQuery.include,
+              },
+            })
+          : await prisma.student.findMany({
+              ...baseQuery,
+              include: {
+                ...baseQuery.include,
+                diet: true,
+                AssignedWorkoutTemplate: true,
+                exercise: true,
+                goal: true,
+                injuries: true,
+                personalTrainer: true,
+                progressPhoto: true,
+                session: true,
+                workoutTemplate: true,
+              },
+            });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: students,
+      });
+    } catch (error: any) {
+      console.error(error);
+
+      return c.json(
+        {
+          success: false,
+          message: "Houve um erro ao buscar seus estudantes!",
+          data: null,
+        },
+        401
+      );
     }
-  )
+  })
   .post(
-    "/new-student",
+    "new-student",
     clerkMiddleware(),
     zValidator(
       "json",
@@ -130,6 +499,7 @@ const app = new Hono()
         status: true,
         trainingFormat: true,
         password: true,
+        gender: true,
       })
     ),
     async (c) => {
@@ -147,10 +517,7 @@ const app = new Hono()
         const client = await clerkClient();
 
         const [personalTrainer, clerkUser] = await Promise.all([
-          prisma.personalTrainer.findUnique({
-            where: { userId: auth.userId },
-            select: { id: true },
-          }),
+          getPersonalTrainerById(auth.userId),
           client.users.createUser({
             firstName: validated.name,
             lastName: "",
@@ -163,7 +530,7 @@ const app = new Hono()
           throw new Error(`Personal trainer não encontrado`);
         }
 
-        await prisma.$transaction([
+        const newStudent = await prisma.$transaction([
           prisma.user.create({
             data: {
               id: clerkUser.id,
@@ -171,6 +538,7 @@ const app = new Hono()
               name: validated.name,
               phone: validated.phone,
               role: "STUDENT",
+              avatarUrl: clerkUser.imageUrl,
             },
           }),
           prisma.student.create({
@@ -179,6 +547,9 @@ const app = new Hono()
               userId: clerkUser.id,
               status: validated.status || "ACTIVE",
               trainingFormat: validated.trainingFormat,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+              gender: validated.gender,
               birthDate: validated.birthDate
                 ? new Date(validated.birthDate)
                 : null,
@@ -199,6 +570,7 @@ const app = new Hono()
         return c.json({
           success: true,
           message: "Estudante criado com sucesso",
+          data: newStudent,
         });
       } catch (err: any) {
         console.error("Erro na criação do estudante:", err);
@@ -215,6 +587,146 @@ const app = new Hono()
         }
 
         return c.json({ success: false, message: errorMessage }, 400);
+      }
+    }
+  )
+  .post(
+    "workout",
+    clerkMiddleware(),
+    zValidator("json", z.any()),
+    async (c) => {
+      const auth = getAuth(c);
+      const json = c.req.valid("json");
+
+      if (!auth?.userId) {
+        return c.json(
+          { success: false, message: "Usuário não autenticado", data: null },
+          401
+        );
+      }
+
+      try {
+        const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+        if (!personalTrainer)
+          throw new Error("Personal trainer não encontrado");
+
+        const baseData = {
+          trainerId: personalTrainer.id,
+          name: json.name,
+          description: json.description,
+          isReusable: json.isReusable,
+          isPublic: json.isPublic,
+          defaultGoal: json.config.goals,
+          defaultLevel: json.config.level,
+          defaultTags: json.config.tags,
+          days: {
+            create: json.days.map((day: any) => ({
+              name: day.name,
+              dayOfWeek: day.dayOfWeek,
+              focusMuscle: day.focusMuscle,
+              order: 0,
+              exercises: {
+                create: day.exercises.map((ex: any) => ({
+                  equipment: ex.equipment || "",
+                  difficulty: ex.difficulty || "",
+                  instructions: ex.instructions || "",
+                  muscle: ex.muscle || "",
+                  type: ex.type || "",
+                  name: ex.exerciseId,
+                  personalTrainerId: personalTrainer.id,
+                  studentId: !json.isReusable
+                    ? json.assigned?.studentId
+                    : undefined,
+                })),
+              },
+            })),
+          },
+        };
+
+        const nonReusableData = json.isReusable
+          ? {}
+          : {
+              studentId: json.assigned!.studentId,
+              assignedInstances: {
+                create: {
+                  trainerId: personalTrainer.id,
+                  studentId: json.assigned!.studentId,
+                  startDate: json.assigned!.startDate,
+                  endDate: json.assigned!.endDate,
+                  isActive: json.assigned!.isActive,
+                  notes: json.assigned!.notes,
+                  customGoal: json.config.goals,
+                  customLevel: json.config.level,
+                  customTags: json.config.tags,
+                },
+              },
+            };
+
+        const workout = await prisma.workoutTemplate.create({
+          data: {
+            ...baseData,
+            ...nonReusableData,
+          },
+          include: {
+            days: {
+              include: { exercises: true },
+            },
+            assignedInstances: true,
+          },
+        });
+
+        return c.json({ success: true, message: null, data: workout });
+      } catch (error: any) {
+        console.error(error);
+        return c.json(
+          { success: false, message: error.message, data: null },
+          500
+        );
+      }
+    }
+  )
+  .delete(
+    "/delete-student/:id",
+    clerkMiddleware(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid("param");
+
+      if (!auth?.userId) {
+        return c.json(
+          { success: false, message: "Usuário não autenticado" },
+          401
+        );
+      }
+
+      if (!id) {
+        return c.json({ success: false, message: "Id não encontrado" }, 400);
+      }
+
+      try {
+        const client = await clerkClient();
+
+        await prisma.user.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        await client.users.deleteUser(id);
+
+        return c.json({
+          success: true,
+          message: "Estudante deletado com sucesso",
+        });
+      } catch (error: any) {
+        console.log(error);
+
+        return c.json({
+          success: false,
+          message: "Houve um erro ao deletar estudante, tente novamente!",
+        });
       }
     }
   );

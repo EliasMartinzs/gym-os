@@ -10,3 +10,5 @@ node_modules/
 # System
 .DS_Store
 *.log" > .gitignore
+# clerk configuration (can include secrets)
+/.clerk/

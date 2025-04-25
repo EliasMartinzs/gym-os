@@ -10,20 +10,22 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-import { cn } from "@/lib/utils";
 import {
   WorkoutTemplateFormValues,
   WorkoutTemplateSchema,
 } from "@/lib/validations";
-import ActivityTrackerImg from "@/public/undraw_activity-tracker_3o6r.svg";
-import Image from "next/image";
 
+import { postWorkout } from "@/features/personal/student/api/post-workout";
 import { Step1Form } from "./step-1-form";
 import { Step2Form } from "./step-2-form";
 import { Step3Form } from "./step-3-form";
 import { Step4Form } from "./step-4-form";
 
-export function WorkoutTemplateForm() {
+type Props = {
+  setOpen: (prevState: boolean) => void;
+};
+
+export function WorkoutTemplateForm({ setOpen }: Props) {
   const [step, setStep] = useState(1);
 
   const form = useForm<WorkoutTemplateFormValues>({
@@ -38,12 +40,25 @@ export function WorkoutTemplateForm() {
           name: "",
           dayOfWeek: "MONDAY",
           focusMuscle: [],
-          exercises: [],
+          exercises: [
+            {
+              exerciseId: "",
+              reps: "12",
+              rest: 30,
+              sets: 3,
+              difficulty: "",
+              equipment: "",
+              instructions: "",
+              muscle: "",
+              name: "",
+              type: "",
+            },
+          ],
         },
       ],
       config: {
         goals: [],
-        level: "ADVANCED",
+        level: undefined,
         tags: [],
       },
       assigned: {
@@ -51,7 +66,7 @@ export function WorkoutTemplateForm() {
         startDate: new Date(),
         endDate: new Date(),
         isActive: true,
-        notes: "", // Adicione campos opcionais faltantes
+        notes: "",
       },
     },
   });
@@ -85,7 +100,6 @@ export function WorkoutTemplateForm() {
     if (!isLastStep) {
       setStep(nextStep);
     } else {
-      // Submeter o formulário
       await form.handleSubmit(onSubmit)();
     }
   };
@@ -117,26 +131,19 @@ export function WorkoutTemplateForm() {
     );
   };
 
+  const mutation = postWorkout();
+
   const onSubmit = (data: z.infer<typeof WorkoutTemplateSchema>) => {
     console.log(data);
+    mutation.mutate(data, {
+      onSuccess: () => {
+        setOpen(false);
+      },
+    });
   };
 
   return (
     <div className="flex items-start justify-center h-full">
-      <div
-        className={cn(
-          "hidden lg:block relative h-96 flex-1",
-          isLastStep && "lg:hidden"
-        )}
-      >
-        <Image
-          src={ActivityTrackerImg}
-          fill
-          alt="Activity Tracker"
-          className={cn("object-center object-contain")}
-        />
-      </div>
-
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -173,7 +180,12 @@ export function WorkoutTemplateForm() {
               <ChevronLeft /> Voltar
             </Button>
 
-            <Button className="flex-1" type="button" onClick={onNext}>
+            <Button
+              className="flex-1"
+              variant="primary"
+              type="button"
+              onClick={onNext}
+            >
               {isLastStep ? (
                 "Criar Template"
               ) : (

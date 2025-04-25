@@ -1,6 +1,6 @@
 "use client";
 
-import { TrendingUp } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -14,7 +14,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -23,20 +22,14 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { useMemo } from "react";
+import { getFormat } from "@/features/personal/student/api/get-format";
+import { NoData } from "../../../components/reusable/no-data";
 
 const chartConfig = {
   name: {
     color: "var(--foreground)",
   },
 } satisfies ChartConfig;
-
-interface Props {
-  chartData: {
-    name: string;
-    count: number;
-  }[];
-}
 
 const CustomChartTootlip = ({
   active,
@@ -45,7 +38,7 @@ const CustomChartTootlip = ({
 }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-md bg-background text-black p-4 shadow-md border">
+      <div className="rounded-md bg-background text-foreground p-4 shadow-md border">
         <p className="font-medium">{label}</p>
         <p className="text-sm">{payload[0].value} alunos</p>
       </div>
@@ -54,13 +47,33 @@ const CustomChartTootlip = ({
   return null;
 };
 
-export function TrainingDistributionChart({ chartData }: Props) {
-  const data = useMemo(() => {
-    return chartData.map((d, i) => ({
-      ...d,
-      fill: `var(--chart-${i + 1})`,
-    }));
-  }, [chartData]);
+export function TrainingFormatChart() {
+  const { data, isLoading, isError } = getFormat();
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-full grid place-items-center">
+        <Loader2 className="size-6 animate-spin" />
+      </div>
+    );
+  }
+  if (isError) return <></>;
+  if (!data?.data) {
+    return (
+      <NoData
+        title="Tudo configurado e pronto para mapear sua distribuição"
+        description="Aqui é onde você verá o panorama completo dos seus alunos por formato de treino (Presencial, Online, Híbrido, Plano Nutricional). Assim que os primeiros alunos forem registrados com seus formatos, o gráfico será gerado automaticamente."
+        extra={[
+          "✅ Defina formatos de treino ao cadastrar novos alunos",
+          "✅ Atualize perfis existentes com o formato correto",
+          "✅ Ofereça diferentes modalidades para atrair mais alunos",
+        ]}
+        href="/personal/workouts"
+        link="Ir para meus treinos"
+        key="TrainingFormatChart"
+      />
+    );
+  }
 
   return (
     <Card className="flex flex-col justify-between h-full">
@@ -72,7 +85,7 @@ export function TrainingDistributionChart({ chartData }: Props) {
         <ChartContainer config={chartConfig}>
           <BarChart
             accessibilityLayer
-            data={data}
+            data={data.data}
             margin={{
               top: 20,
             }}
@@ -92,20 +105,12 @@ export function TrainingDistributionChart({ chartData }: Props) {
                 fill="#fff"
                 offset={12}
                 fontSize={12}
-                className="fill-background"
+                className="fill-foreground"
               />
             </Bar>
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col items-center justify-center gap-2 text-sm">
-        <div className="flex gap-2 font-medium leading-none">
-          Crescimento de 7.3% este mês <TrendingUp className="h-4 w-4" />
-        </div>
-        <div className="leading-none text-muted-foreground">
-          Mostrando a distribuição atual de alunos por formato
-        </div>
-      </CardFooter>
     </Card>
   );
 }

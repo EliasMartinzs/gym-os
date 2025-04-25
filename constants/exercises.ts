@@ -1858,6 +1858,65 @@ const ALL_EXERCISES = [
   ...ABDOMINAL_EXERCISES,
 ];
 
+const EXERCISE_TYPES = [
+  "Força",
+  "Cardio",
+  "Flexibilidade",
+  "Equilíbrio",
+  "Pliometria",
+  "Levantamento de Peso Olímpico",
+  "Funcional",
+  "Calistenia",
+  "Mobilidade",
+] as const;
+
+const EXERCISE_MUSCLES = [
+  "Abdominais",
+  "Bíceps",
+  "Panturrilhas",
+  "Peitoral",
+  "Antebraços",
+  "Glúteos",
+  "Posteriores de Coxa",
+  "Dorsais",
+  "Lombar",
+  "Costas Médias",
+  "Pescoço",
+  "Quadríceps",
+  "Ombros",
+  "Trapézios",
+  "Tríceps",
+  "Corpo Inteiro",
+  "Core",
+] as const;
+
+const EXERCISE_EQUIPMENT = [
+  "Barra",
+  "Halter",
+  "Máquina",
+  "Cabo",
+  "Kettlebell",
+  "Peso Corporal",
+  "Elásticos",
+  "Medicine Ball",
+  "Bola Suíça",
+  "Barra W",
+  "TRX",
+  "Outros",
+] as const;
+
+const EXERCISE_DIFFICULTY_LEVELS = [
+  "Iniciante",
+  "Intermediário",
+  "Avançado",
+  "Expert",
+] as const;
+
+type ExerciseType = typeof EXERCISE_TYPES;
+type ExerciseMuscle = typeof EXERCISE_MUSCLES;
+type ExerciseEquipment = typeof EXERCISE_EQUIPMENT;
+type ExerciseDifficulty = typeof EXERCISE_DIFFICULTY_LEVELS;
+
 export {
   CHEST_EXERCISES,
   LEG_EXERCISES,
@@ -1866,4 +1925,15 @@ export {
   TRICEPS_EXERCISES,
   ABDOMINAL_EXERCISES,
   ALL_EXERCISES,
+  EXERCISE_TYPES,
+  EXERCISE_MUSCLES,
+  EXERCISE_EQUIPMENT,
+  EXERCISE_DIFFICULTY_LEVELS,
+};
+
+export type {
+  ExerciseType,
+  ExerciseMuscle,
+  ExerciseEquipment,
+  ExerciseDifficulty,
 };

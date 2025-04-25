@@ -1,4 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { InferResponseType } from "hono";
+import client from "@/lib/client";
 import {
   Card,
   CardContent,
@@ -6,98 +7,131 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { EnumTranslations } from "@/lib/enum-tranlations";
+import { Separator } from "@/components/ui/separator";
+import { EnumTranslations } from "../../../../lib/enum-tranlations";
+import { useState } from "react";
+import { ExpandablePanel } from "@/components/reusable/expandable-panel";
+import { DifficultyLevel, FitnessGoal } from "@prisma/client";
+import { Button } from "@/components/ui/button";
 
-import { DifficultyLevel, FitnessGoal, Prisma } from "@prisma/client";
-import { WorkoutEdit } from "./workout-edit";
+type ApiResponse = InferResponseType<typeof client.api.personal.workouts.$get>;
 
-export type WithEnums<T> = T & {
-  goal: FitnessGoal[];
-  level: DifficultyLevel | null;
+type SingleWorkout = NonNullable<ApiResponse["data"]>[number];
+
+type WorkoutProps = {
+  workout: SingleWorkout;
 };
 
-type WorkoutTemplateWithRelations = WithEnums<
-  Prisma.WorkoutTemplateGetPayload<{
-    include: {
-      days: {
-        include: {
-          ExerciseInWorkout: {
-            include: {
-              exercise: true;
-            };
-          };
-        };
-      };
-    };
-  }>
->;
+export const Workout = ({ workout }: WorkoutProps) => {
+  const [isExpanded, setIsExpanded] = useState(false);
 
-interface Props {
-  workout: WorkoutTemplateWithRelations;
-}
-
-const students = [
-  {
-    id: "1",
-    name: "João Silva",
-  },
-  {
-    id: "2",
-    name: "Maria Oliveira",
-  },
-  {
-    id: "3",
-    name: "Carlos Souza",
-  },
-  {
-    id: "4",
-    name: "Ana Santos",
-  },
-  {
-    id: "5",
-    name: "Pedro Costa",
-  },
-];
-
-export const Workout = ({ workout }: Props) => {
-  const { id, level, name, description, goal } = workout;
+  const { name, id, defaultGoal, defaultLevel, defaultTags, description } =
+    workout;
 
   return (
-    <Card className="xl:w-fit hover:scale-105 transition-all shadow relative">
-      <CardHeader>
-        <CardTitle>{name}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+    <ExpandablePanel
+      isExpanded={isExpanded}
+      setIsExpanded={setIsExpanded}
+      triggerElement={
+        <TriggerCardWorkout
+          name={name}
+          defaultGoal={defaultGoal}
+          defaultLevel={defaultLevel}
+          defaultTags={defaultTags}
+          description={description}
+        />
+      }
+    >
+      <div className="relative">
+        <TriggerCardWorkout
+          name={name}
+          defaultGoal={defaultGoal}
+          defaultLevel={defaultLevel}
+          defaultTags={defaultTags}
+          description={description}
+        />
+
+        <Button
+          variant="primary"
+          className="absolute top-4 right-4 z-50"
+          onClick={() => setIsExpanded(false)}
+        >
+          ✕
+        </Button>
+      </div>
+    </ExpandablePanel>
+  );
+};
+
+const TriggerCardWorkout = ({
+  defaultGoal,
+  defaultLevel,
+  defaultTags,
+  description,
+  name,
+}: {
+  name: string;
+  defaultGoal: FitnessGoal[];
+  defaultLevel: DifficultyLevel | null;
+  defaultTags: string[];
+  description: string | null;
+}) => {
+  return (
+    <Card className="h-full">
+      <CardHeader className="space-y-3">
+        <CardTitle className="text-lg font-bold">{name}</CardTitle>
+        <CardDescription
+          dangerouslySetInnerHTML={{ __html: description as string }}
+        />
       </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-x-1">
-          <p>Nivel:</p>
-          <div>
-            <>
-              {level ? (
-                <span className="px-2 bg-border rounded-full">
-                  {EnumTranslations.DifficultyLevel[level]}
-                </span>
-              ) : (
-                "Nível não definido"
-              )}
-            </>
-          </div>
-        </div>
+      <Separator />
+      <CardContent className="px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {defaultGoal && (
+            <div>
+              <p className="font-medium">Objetivos</p>
 
-        <div className="flex items-center gap-x-1">
-          <p>Objetivos:</p>
-
-          <div className="flex flex-wrap gap-2">
-            {goal.map((g) => (
-              <div key={g} className="px-2 bg-border rounded-full">
-                {EnumTranslations.FitnessGoal[g]}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {defaultGoal.map((item) => (
+                  <small
+                    className="border-b border-primary p-2 font-light"
+                    key={item}
+                  >
+                    {EnumTranslations.FitnessGoal[item]}
+                  </small>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </div>
+          )}
 
-        <div className="absolute top-4 right-4">
-          <WorkoutEdit workout={workout} students={students} />
+          {defaultLevel !== null && (
+            <div>
+              <p className="font-medium">Dificuldade</p>
+
+              <div className="flex flex-wrap gap-2 mt-2">
+                <small className="border-b border-primary p-2 font-light">
+                  {EnumTranslations.DifficultyLevel[defaultLevel]}
+                </small>
+              </div>
+            </div>
+          )}
+
+          {defaultTags.length !== 0 && (
+            <div>
+              <p className="font-medium">Tags</p>
+
+              <div className="flex flex-wrap gap-2 mt-2">
+                {defaultTags.map((item) => (
+                  <small
+                    className="border-b border-primary p-2 font-light"
+                    key={item}
+                  >
+                    {item}
+                  </small>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

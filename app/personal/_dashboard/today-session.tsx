@@ -101,6 +101,7 @@ export const todaySessionsMock = [
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDate } from "@/lib/utils";
+import { NoData } from "../../../components/reusable/no-data";
 
 export function TodaySessions() {
   const sessions = todaySessionsMock;
@@ -111,6 +112,25 @@ export function TodaySessions() {
     .sort(
       (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
     );
+
+  const isError = true;
+
+  if (isError) {
+    return (
+      <NoData
+        title="Sua agenda de treinos está pronta para ser preenchida!"
+        description="Aqui será exibido seu cronograma de aulas com alunos. Assim que seus alunos agendarem sessões, esta área mostrará automaticamente:"
+        extra={[
+          "✅ Envie lembretes para alunos sobre agendamento",
+          "✅ Ofereça horários disponíveis",
+          "✅ Crie pacotes de aulas atraentes",
+        ]}
+        href="/personal/workouts"
+        link="Ir para meus alunos"
+        key="TodaySession"
+      />
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-4">

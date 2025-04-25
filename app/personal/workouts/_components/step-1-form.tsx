@@ -13,6 +13,7 @@ import { WorkoutTemplateSchema } from "@/lib/validations";
 import { HelpCircle } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
+import { RichTextEditor } from "./rich-text-editor";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -44,7 +45,9 @@ export const Step1Form = ({ form }: Props) => {
           <FormItem>
             <FormLabel>Descrição (Opcional)</FormLabel>
             <FormControl>
-              <Input placeholder="Descrição do template..." {...field} />
+              <div>
+                <RichTextEditor onChange={field.onChange} />
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -114,7 +117,7 @@ export const Step1Form = ({ form }: Props) => {
                         Templates públicos ficam visíveis para:
                       </p>
 
-                      <p>- Todos os professores do Gym-Os</p>
+                      <p>- Todos os professores do The Personal</p>
                       <p>
                         - Podem ser usados como base por outros profissionais.
                       </p>

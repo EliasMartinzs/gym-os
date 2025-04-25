@@ -14,7 +14,7 @@ export function ModeToggle() {
 
   if (!mounted) {
     return (
-      <button className="size-16 rounded-full hover:bg-card/50 grid place-items-center cursor-pointer transition-transform ease-in-out">
+      <button className="size-16 rounded-full hover:bg-card/50 grid place-items-center cursor-pointer transition-transform ease-in-out dark:hover:bg-primary">
         {/* Espaço reservado vazio durante SSR */}
       </button>
     );
@@ -22,7 +22,7 @@ export function ModeToggle() {
 
   return (
     <button
-      className="size-16 rounded-full hover:bg-card/50 grid place-items-center cursor-pointer transition-transform ease-in-out"
+      className="size-16 rounded-full hover:bg-card/50 grid place-items-center cursor-pointer transition-transform ease-in-out dark:hover:bg-primary"
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? <Moon /> : <Sun />}

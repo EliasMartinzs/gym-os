@@ -17,9 +17,16 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 
-import { useState } from "react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { cn } from "@/lib/utils";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "../ui/sheet";
 
 interface WorkoutEditProps {
   trigger: React.ReactNode;
@@ -48,7 +55,7 @@ export const ResponsiveModal = ({
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent
           className={cn(
-            "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4",
+            "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4 overflow-y-auto",
             className
           )}
         >
@@ -63,20 +70,18 @@ export const ResponsiveModal = ({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent
-        className={cn(
-          "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4",
-          className
-        )}
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger asChild>{trigger}</SheetTrigger>
+      <SheetContent
+        side="bottom"
+        className={cn("w-auto max-h-3/4 max-lg:px-4 pt-8 pb-5", className)}
       >
-        <DrawerHeader className={cn(!title && "hidden")}>
-          <DrawerTitle className="text-center">{title}</DrawerTitle>
-          <DrawerDescription>{description}</DrawerDescription>
-        </DrawerHeader>
-        {children}
-      </DrawerContent>
-    </Drawer>
+        <SheetHeader className={cn(!title && "hidden")}>
+          <SheetTitle className="text-center">{title}</SheetTitle>
+          <SheetDescription>{description}</SheetDescription>
+        </SheetHeader>
+        <div className="overflow-y-auto">{children}</div>
+      </SheetContent>
+    </Sheet>
   );
 };

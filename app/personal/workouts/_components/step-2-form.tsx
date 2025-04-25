@@ -17,11 +17,19 @@ import { cn } from "@/lib/utils";
 import { WorkoutTemplateSchema } from "@/lib/validations";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Loader2 } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { StudentsCombobox } from "./students-combobox";
 import { ConfigForm } from "./config-form";
+import { getStudents } from "@/features/personal/student/api/get-students";
+import { useMemo } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -30,28 +38,59 @@ type Props = {
 };
 
 export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
+  const { data, isError, isLoading } = getStudents("user");
+
+  const students = useMemo(() => {
+    return data?.map((student) => ({
+      id: student.id,
+      name: student.user.name,
+    }));
+  }, [data]);
+
+  if (isLoading)
+    return (
+      <div className="w-full grid place-items-center h-full absolute top-0 left-0 z-50 bg-background">
+        <Loader2 className="size-8 animate-spin" />
+      </div>
+    );
+  if (isError)
+    return (
+      <div className="w-full h-52 text-center">
+        Houve um erro tente novamente!
+      </div>
+    );
+  if (!students || students.length === 0) {
+    return (
+      <div className="w-full h-52 text-center">
+        Nenhum aluno até o momento, por favor crie um!
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {!form.watch("isReusable") ? (
-        <div className="space-y-4">
+        <div className="space-y-4 w-full">
           <FormField
             control={form.control}
             name="assigned.studentId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Selecione o aluno</FormLabel>
-                <FormControl>
-                  <StudentsCombobox
-                    onSelect={field.onChange}
-                    selected={field.value}
-                    students={[
-                      {
-                        id: "1",
-                        name: "ana",
-                      },
-                    ]}
-                  />
-                </FormControl>
+                <FormLabel>Alunos</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione o aluno" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {students.map((option) => (
+                      <SelectItem key={option.id} value={option.id}>
+                        {option.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

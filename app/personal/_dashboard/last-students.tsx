@@ -1,136 +1,54 @@
+"use client";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getLastStudents } from "@/features/personal/student/api/get-last-students";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-
-const fakePeople = [
-  {
-    id: "1",
-    user: {
-      email: "john.doe@example.com",
-      name: "John Doe",
-      phone: "+1234567890",
-      avatarUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-      role: "PERSONAL_TRAINER",
-    },
-    student: {
-      targetWeight: 75,
-      workoutDays: 4,
-      birthDate: "1990-01-15",
-      gender: "MALE",
-      progressPhoto: [
-        {
-          category: "FRONT",
-          photoUrl: "https://randomuser.me/api/portraits/men/1.jpg",
-        },
-      ],
-    },
-  },
-  {
-    id: "2",
-    user: {
-      email: "jane.smith@example.com",
-      name: "Jane Smith",
-      phone: "+9876543210",
-      avatarUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-      role: "PERSONAL_TRAINER",
-    },
-    student: {
-      targetWeight: 60,
-      workoutDays: 3,
-      birthDate: "1985-05-20",
-      gender: "FEMALE",
-      progressPhoto: [
-        {
-          category: "SIDE",
-          photoUrl: "https://randomuser.me/api/portraits/women/2.jpg",
-        },
-      ],
-    },
-  },
-  {
-    id: "3",
-    user: {
-      email: "mark.brown@example.com",
-      name: "Mark Brown",
-      phone: "+1122334455",
-      avatarUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-      role: "PERSONAL_TRAINER",
-    },
-    student: {
-      targetWeight: 80,
-      workoutDays: 5,
-      birthDate: "1992-09-10",
-      gender: "MALE",
-      progressPhoto: [
-        {
-          category: "BACK",
-          photoUrl: "https://randomuser.me/api/portraits/men/3.jpg",
-        },
-      ],
-    },
-  },
-  {
-    id: "4",
-    user: {
-      email: "lucy.jones@example.com",
-      name: "Lucy Jones",
-      phone: "+9988776655",
-      avatarUrl: "https://randomuser.me/api/portraits/women/4.jpg",
-      role: "PERSONAL_TRAINER",
-    },
-    student: {
-      targetWeight: 65,
-      workoutDays: 4,
-      birthDate: "1995-07-30",
-      gender: "FEMALE",
-      progressPhoto: [
-        {
-          category: "FLEXED",
-          photoUrl: "https://randomuser.me/api/portraits/women/4.jpg",
-        },
-      ],
-    },
-  },
-  {
-    id: "5",
-    user: {
-      email: "alex.lee@example.com",
-      name: "Alex Lee",
-      phone: "+1231231234",
-      avatarUrl: "https://randomuser.me/api/portraits/men/5.jpg",
-      role: "PERSONAL_TRAINER",
-    },
-    student: {
-      targetWeight: 70,
-      workoutDays: 3,
-      birthDate: "1993-11-05",
-      gender: "MALE",
-      progressPhoto: [
-        {
-          category: "RELAXED",
-          photoUrl: "https://randomuser.me/api/portraits/men/5.jpg",
-        },
-      ],
-    },
-  },
-];
+import { NoData } from "../../../components/reusable/no-data";
 
 export const LastStudents = () => {
+  const { data, isError, isLoading } = getLastStudents();
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 h-full grid place-items-center">
+        <Loader2 className="size-6 animate-spin" />
+      </div>
+    );
+  }
+  if (isError) return <></>;
+  if (!data?.data || data.data.length === 0) {
+    return (
+      <NoData
+        title="Seu espaço para acompanhar novos alunos está pronto!"
+        description="Aqui você verá os últimos alunos cadastrados. Assim que novos alunos forem registrados sob sua supervisão, esta área mostrará automaticamente as informações mais recentes."
+        extra={[
+          "✅ Envie uma mensagem de boas-vindas personalizada",
+          "✅ Agende uma avaliação física inicial",
+          "✅ Crie um plano de treino personalizado",
+        ]}
+        href="/personal/students"
+        link="Ir para meus alunos"
+        key="LastStudents"
+      />
+    );
+  }
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Ultimos alunos</CardTitle>
+        <CardTitle>Ultimos alunos cadastrados</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0">
         <div className="flex flex-col gap-4">
-          {fakePeople.map((p) => (
+          {data.data.map((p) => (
             <Link
               href={p.id}
               key={p.id}
-              className="p-2 flex items-center rounded-3xl gap-x-3 border border-border hover:bg-background/30 transition-colors"
+              className="p-2 flex items-center rounded-3xl gap-x-3 border hover:border-primary hover:bg-background/30 transition-colors"
             >
               <Image
-                src={p.user.avatarUrl}
+                src={p.user.avatarUrl as string}
                 alt="a"
                 width={48}
                 height={48}

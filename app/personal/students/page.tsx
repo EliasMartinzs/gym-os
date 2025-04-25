@@ -1,17 +1,9 @@
 import { Main } from "@/components/reusable/main";
-import React from "react";
-import { DataTable } from "./data-table";
-import { columns } from "./column";
-import { fakeUsers } from "./students";
-import { Card, CardContent } from "@/components/ui/card";
-import { StatusStudentsChart } from "./_components/status-students-chart";
 import { BirthdayStudents } from "./_components/birthdays-students";
+import { StudentsDurationChart } from "./_components/duration-students";
 import { NewStudent } from "./_components/new-student";
-
-const chartData = [
-  { name: "Ativo", count: 32, fill: "var(--chart-1)" },
-  { name: "Ativo", count: 98, fill: "var(--chart-1)" },
-];
+import { StatusStudentsChart } from "./_components/status-students-chart";
+import { DataTable } from "./data-table";
 
 export default function StudentsPersonal() {
   return (
@@ -20,21 +12,16 @@ export default function StudentsPersonal() {
         <h2 className="text-xl lg:text-3xl font-medium italic">Meus alunos</h2>
         <NewStudent />
       </div>
-      <Card>
-        <CardContent>
-          <DataTable columns={columns} />
-        </CardContent>
-      </Card>
 
-      <div className="flex flex-col xl:flex-row gap-4">
-        <div className="xl:w-fit xl:h-fit">
-          <StatusStudentsChart chartData={chartData} />
-        </div>
+      <DataTable />
 
-        <div className="xl:w-fit xl:h-fit">
-          <BirthdayStudents />
-        </div>
+      <div className="max-lg:flex flex-col sm:grid grid-cols-2 lg:flex lg:flex-row gap-6">
+        <StatusStudentsChart />
+
+        <BirthdayStudents />
       </div>
+
+      <StudentsDurationChart />
     </Main>
   );
 }

@@ -7,6 +7,7 @@ import {
   Role,
   Status,
   TrainingFormat,
+  Gender,
 } from "@prisma/client";
 
 export const workoutTemplateFormEditSchema = z.object({
@@ -54,13 +55,19 @@ export const ExerciseSchema = z.object({
   sets: z.number().min(1, "Mínimo 1 série"),
   reps: z.string().min(1, "Repetições são obrigatórias"),
   rest: z.number().min(0, "Não pode ser negativo").optional(),
+  name: z.string().optional(),
+  type: z.string().min(1, "insira o tipo do exercicio"),
+  muscle: z.string().min(1, "insira o musculo do exercicio"),
+  equipment: z.string().min(1, "insira o equipamento do exercicio"),
+  difficulty: z.string().min(1, "insira a dificuldade do exercicio"),
+  instructions: z.string().min(1, "insira as instruçoes do exercicio"),
 });
 
 export const WorkoutDaySchema = z.object({
   name: z.string().min(1, "Dia do treino é obrigatório"),
-  dayOfWeek: z.nativeEnum(DayOfWeek), // Supondo que DayOfWeek esteja definido em algum lugar
+  dayOfWeek: z.nativeEnum(DayOfWeek),
   focusMuscle: z
-    .array(z.nativeEnum(MuscleGroup)) // Supondo que MuscleGroup esteja definido em algum lugar
+    .array(z.nativeEnum(MuscleGroup))
     .min(1, "Selecione pelo menos 1 grupo"),
   exercises: z.array(ExerciseSchema).min(1, "Adicione pelo menos 1 exercício"),
 });
@@ -74,9 +81,9 @@ export const TemplateBasicSchema = z.object({
 
 export const ReusableConfigSchema = z.object({
   goals: z
-    .array(z.nativeEnum(FitnessGoal)) // Supondo que FitnessGoal esteja definido em algum lugar
+    .array(z.nativeEnum(FitnessGoal))
     .min(1, "Selecione pelo menos 1 objetivo"),
-  level: z.nativeEnum(DifficultyLevel), // Supondo que DifficultyLevel esteja definido em algum lugar
+  level: z.nativeEnum(DifficultyLevel),
   tags: z.array(z.string()).optional(),
 });
 
@@ -94,14 +101,14 @@ export const WorkoutTemplateSchema = z.discriminatedUnion("isReusable", [
   TemplateBasicSchema.extend({
     isReusable: z.literal(true),
     config: ReusableConfigSchema,
-    days: z.array(WorkoutDaySchema).min(1),
+    days: z.array(WorkoutDaySchema),
   }),
 
   TemplateBasicSchema.extend({
     isReusable: z.literal(false),
     assigned: AssignedWorkoutTemplate,
     config: ReusableConfigSchema,
-    days: z.array(WorkoutDaySchema).min(1),
+    days: z.array(WorkoutDaySchema),
   }),
 ]);
 
@@ -117,6 +124,7 @@ export const NewStudentSchema = z.object({
   name: z.string().min(4, {
     message: "Ínsira um nome",
   }),
+  gender: z.enum(["MALE", "FEMALE"]),
   phone: z.string().optional(),
   birthDate: z.coerce.date(),
   role: z.nativeEnum(Role).default("STUDENT"),

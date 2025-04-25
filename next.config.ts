@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
       {
         hostname: "randomuser.me",
       },
+      {
+        hostname: "img.clerk.com",
+      },
     ],
   },
 };

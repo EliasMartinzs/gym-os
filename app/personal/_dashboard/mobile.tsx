@@ -1,21 +1,20 @@
 "use client";
 import Image from "next/image";
 
+import { Icon } from "@/components/reusable/icon";
+import { MenuLinks } from "@/components/reusable/menu-links";
+import { ModeToggle } from "@/components/reusable/mode-toggle";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { LogOut, Menu } from "lucide-react";
-import { Icon } from "@/components/reusable/icon";
-import { MenuLinks } from "@/components/reusable/menu-links";
 import { personalLinks } from "@/constants/links";
 import { SignOutButton } from "@clerk/nextjs";
+import { LogOut, Menu } from "lucide-react";
 import { useState } from "react";
-import { ModeToggle } from "@/components/reusable/mode-toggle";
 
 export const TopbarMobile = () => {
   const [open, setOpen] = useState(false);
@@ -46,7 +45,7 @@ export const TopbarMobile = () => {
             <MenuLinks links={personalLinks} setOpen={setOpen} />
             <ModeToggle />
             <SignOutButton>
-              <div className="size-16 rounded-full grid place-items-center transition-colors hover:bg-card/50 cursor-pointer">
+              <div className="size-16 rounded-full grid place-items-center transition-colors hover:bg-card/50 cursor-pointer dark:hover:bg-primary">
                 <LogOut />
               </div>
             </SignOutButton>

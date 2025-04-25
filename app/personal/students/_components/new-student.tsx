@@ -12,7 +12,7 @@ export const NewStudent = () => {
   return (
     <ResponsiveModal
       trigger={
-        <Button>
+        <Button variant="primary">
           Novo aluno <PlusCircle />
         </Button>
       }

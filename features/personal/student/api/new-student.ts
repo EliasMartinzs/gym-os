@@ -14,7 +14,7 @@ export const newStudent = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Response, Error, Request>({
-    mutationKey: ["student"],
+    mutationKey: ["new-student"],
     mutationFn: async (json) => {
       const response = await client.api.personal["new-student"].$post({
         json: json,
@@ -31,14 +31,16 @@ export const newStudent = () => {
 
       return result;
     },
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       toast.success(data.message || "Usuário criado com sucesso", {
         id: "student",
       });
 
-      queryClient.invalidateQueries({
-        queryKey: ["student"],
-      });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["students"] }),
+        queryClient.invalidateQueries({ queryKey: ["status"] }),
+        queryClient.invalidateQueries({ queryKey: ["students-by-birthdate"] }),
+      ]);
     },
     onError: (error) => {
       toast.error(error.message || "Erro ao criar usuário", {

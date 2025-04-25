@@ -1,14 +1,18 @@
 import client from "@/lib/client";
 import { useQuery } from "@tanstack/react-query";
-import { InferRequestType, InferResponseType } from "hono";
+import { InferResponseType } from "hono";
 
-export const getAnalytics = (param: "all" | "birthdays" | "counts") => {
-  const query = useQuery({
-    queryKey: ["student"],
+type Response = InferResponseType<
+  (typeof client.api.personal.students)[":param"]["$get"]
+>["data"];
+
+export const getStudents = (param: "user" | "complete") => {
+  const query = useQuery<Response, Error>({
+    queryKey: ["students", param],
     queryFn: async () => {
-      const response = await client.api.personal.analytics.$get({
+      const response = await client.api.personal.students[":param"].$get({
         param: {
-          dataType: param,
+          param: param,
         },
       });
 

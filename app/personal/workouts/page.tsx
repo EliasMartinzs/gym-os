@@ -2,6 +2,7 @@ import { Main } from "@/components/reusable/main";
 
 import { WorkoutTemplates } from "./_components/workout-templates";
 import { NewTemplateWorkout } from "./_components/new-template-workout";
+import { ExpandablePanel } from "@/components/reusable/expandable-panel";
 
 export default function Workouts() {
   return (

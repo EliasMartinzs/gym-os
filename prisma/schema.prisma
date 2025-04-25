@@ -8,13 +8,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-// prisma/schema.prisma
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  // uncomment next line if you use Prisma <5.10
-  // directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 enum Gender {
@@ -251,6 +248,9 @@ model Student {
   workoutTemplate         WorkoutTemplate[]
   AssignedWorkoutTemplate AssignedWorkoutTemplate[]
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("students")
 }
 
@@ -269,7 +269,7 @@ model Recurrence {
 
 model Goal {
   id        String  @id @default(uuid())
-  student   Student @relation(fields: [studentId], references: [id])
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String
 
   type      FitnessGoal
@@ -306,7 +306,7 @@ model Note {
 
 model Injury {
   id           String    @id @default(uuid())
-  student      Student   @relation(fields: [studentId], references: [id])
+  student      Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId    String
   description  String // Ex: "Lesão no joelho direito"
   dateOccurred DateTime?
@@ -318,7 +318,7 @@ model Injury {
 
 model ProgressPhoto {
   id        String        @id @default(uuid())
-  student   Student       @relation(fields: [studentId], references: [id])
+  student   Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String
   photoUrl  String
   category  PhotoCategory
@@ -345,8 +345,8 @@ model WorkoutTemplate {
   defaultTags  String[]
 
   // Relacionamento com instâncias aplicadas
-  assignedInstances AssignedWorkoutTemplate[]
-  student           Student?                  @relation(fields: [studentId], references: [id])
+  assignedInstances AssignedWorkoutTemplate[] @relation("TemplateAssignments")
+  student           Student?                  @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId         String?
   session           Session[]
 
@@ -356,9 +356,9 @@ model WorkoutTemplate {
 
 model AssignedWorkoutTemplate {
   id         String          @id @default(uuid())
-  template   WorkoutTemplate @relation(fields: [templateId], references: [id])
+  template   WorkoutTemplate @relation(fields: [templateId], references: [id], name: "TemplateAssignments", onDelete: Cascade)
   templateId String
-  student    Student         @relation(fields: [studentId], references: [id])
+  student    Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId  String
   trainer    PersonalTrainer @relation(fields: [trainerId], references: [id])
   trainerId  String
@@ -382,7 +382,7 @@ model AssignedWorkoutTemplate {
 
 model WorkoutDay {
   id                String              @id @default(uuid())
-  template          WorkoutTemplate     @relation(fields: [templateId], references: [id])
+  template          WorkoutTemplate     @relation(fields: [templateId], references: [id], onDelete: Cascade)
   templateId        String
   name              String // "Treino A", "Push Day"
   dayOfWeek         DayOfWeek? // Nullable para templates rápidos
@@ -396,9 +396,9 @@ model WorkoutDay {
 
 model ExerciseInWorkout {
   id         String     @id @default(uuid())
-  workoutDay WorkoutDay @relation(fields: [dayId], references: [id])
+  workoutDay WorkoutDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
   dayId      String
-  exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+  exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   exerciseId String
   order      Int
   sets       Int
@@ -420,7 +420,7 @@ model Exercise {
   personalTrainer   PersonalTrainer     @relation(fields: [personalTrainerId], references: [id])
   student           Student?            @relation(fields: [studentId], references: [id])
   studentId         String?
-  workoutDay        WorkoutDay?         @relation(fields: [workoutDayId], references: [id])
+  workoutDay        WorkoutDay?         @relation(fields: [workoutDayId], references: [id], onDelete: Cascade)
   workoutDayId      String?
   exerciseInWorkout ExerciseInWorkout[]
 

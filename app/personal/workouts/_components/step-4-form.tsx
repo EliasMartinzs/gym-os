@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/command";
 import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import Image from "next/image";
+import { useEffect } from "react";
 
 interface Props {
   form: UseFormReturn<WorkoutTemplateFormValues>;
@@ -55,7 +56,7 @@ export const Step4Form = ({ form }: Props) => {
 
   const watchDays = watch("days");
 
-  const addNewDay = () => {
+  const addNewDay = async () => {
     append({
       name: "",
       dayOfWeek: "MONDAY",
@@ -63,13 +64,24 @@ export const Step4Form = ({ form }: Props) => {
       exercises: [
         {
           exerciseId: "",
-          reps: "",
-          rest: 0,
-          sets: 0,
+          reps: "12",
+          rest: 30,
+          sets: 3,
+          difficulty: "BEGINNER",
+          equipment: "",
+          instructions: "",
+          muscle: "",
+          name: "",
+          type: "",
         },
       ],
     });
+    await form.trigger("days");
   };
+
+  useEffect(() => {
+    form.trigger("days");
+  }, [watchDays]);
 
   const removeDay = (index: number) => {
     remove(index);
@@ -172,7 +184,7 @@ export const Step4Form = ({ form }: Props) => {
                       <FormItem>
                         <FormLabel>Grupos Musculares</FormLabel>
 
-                        <Popover>
+                        <Popover modal>
                           <PopoverTrigger asChild>
                             <FormControl>
                               <Button
