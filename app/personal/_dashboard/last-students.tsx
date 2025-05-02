@@ -43,7 +43,7 @@ export const LastStudents = () => {
         <div className="flex flex-col gap-4">
           {data.data.map((p) => (
             <Link
-              href={p.id}
+              href={`/personal/student/${p.userId}`}
               key={p.id}
               className="p-2 flex items-center rounded-3xl gap-x-3 border hover:border-primary hover:bg-background/30 transition-colors"
             >

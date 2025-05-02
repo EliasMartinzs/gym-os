@@ -6,7 +6,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -41,10 +42,12 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
   const { data, isError, isLoading } = getStudents("user");
 
   const students = useMemo(() => {
-    return data?.map((student) => ({
-      id: student.id,
-      name: student.user.name,
-    }));
+    return data
+      ?.filter((student) => student.workoutTemplate.length === 0)
+      .map((student) => ({
+        id: student.id,
+        name: student.user.name,
+      }));
   }, [data]);
 
   if (isLoading)
@@ -53,16 +56,25 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
         <Loader2 className="size-8 animate-spin" />
       </div>
     );
+
   if (isError)
     return (
-      <div className="w-full h-52 text-center">
-        Houve um erro tente novamente!
-      </div>
+      <div className="w-full text-center">Houve um erro tente novamente!</div>
     );
-  if (!students || students.length === 0) {
+
+  if (
+    !students ||
+    (students.length === 0 && form.watch("isReusable") === false)
+  ) {
     return (
-      <div className="w-full h-52 text-center">
-        Nenhum aluno até o momento, por favor crie um!
+      <div className="space-y-5 mb-8 flex items-center justify-center flex-col">
+        <Link
+          href="/personal/students"
+          className={buttonVariants({ variant: "ghost", className: "text-xl" })}
+        >
+          Nenhum aluno cadastrado. Clique para adicionar seu primeiro aluno!
+        </Link>
+        <p>Cada aluno pode ter apenas um template de treino associado.</p>
       </div>
     );
   }

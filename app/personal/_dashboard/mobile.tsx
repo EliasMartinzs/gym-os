@@ -1,5 +1,4 @@
 "use client";
-import Image from "next/image";
 
 import { Icon } from "@/components/reusable/icon";
 import { MenuLinks } from "@/components/reusable/menu-links";
@@ -15,20 +14,35 @@ import { personalLinks } from "@/constants/links";
 import { SignOutButton } from "@clerk/nextjs";
 import { LogOut, Menu } from "lucide-react";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export const TopbarMobile = () => {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
-    <header className="w-full p-4 block lg:hidden">
-      <nav className="w-full flex items-center justify-between">
-        <Image
-          src="/logo.jpg"
-          alt="logo"
-          width={64}
-          height={64}
-          className="object-cover object-center rounded-full"
-        />
+    <header
+      className={cn(
+        "w-full p-4 block lg:hidden",
+        pathname.includes("/personal/student/") &&
+          "absolute top-0 left-0 z-[51]"
+      )}
+    >
+      <nav
+        className={cn(
+          "w-full flex items-center",
+          pathname.includes("/personal/student/user")
+            ? "justify-end"
+            : "justify-between"
+        )}
+      >
+        {pathname.includes("/personal/student/user") ? null : (
+          <Link href="/personal" className="text-2xl font-semibold">
+            The Personal
+          </Link>
+        )}
 
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger>

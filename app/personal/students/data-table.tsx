@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { getStudents } from "@/features/personal/student/api/get-students";
+import AddUserImg from "@/public/undraw_add-user_rbko.svg";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -23,13 +24,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import Image from "next/image";
 import { useState } from "react";
 import { NewStudent } from "./_components/new-student";
 import { columns, StudentTableData } from "./column";
 import { ErrorState, LoadingState } from "./data-table-states";
 import { useTableData } from "./use-data-table";
-import AddUserImg from "@/public/undraw_add-user_rbko.svg";
-import Image from "next/image";
 
 export function DataTable() {
   const { data, isLoading, isError, refetch } = getStudents("user");

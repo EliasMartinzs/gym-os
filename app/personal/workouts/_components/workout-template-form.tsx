@@ -43,9 +43,9 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
           exercises: [
             {
               exerciseId: "",
-              reps: "12",
-              rest: 30,
-              sets: 3,
+              reps: undefined,
+              rest: undefined,
+              sets: 0,
               difficulty: "",
               equipment: "",
               instructions: "",
@@ -72,6 +72,8 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
   });
 
   const { trigger } = form;
+
+  const isReusable = form.watch("isReusable");
 
   const validateCurrentStep = async () => {
     if (step === 1) {
@@ -104,7 +106,6 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
     }
   };
 
-  const isReusable = form.watch("isReusable");
   const totalSteps = isReusable ? 3 : 4;
   const isLastStep = step === totalSteps;
   const onBack = () => setStep(step - 1);
@@ -134,7 +135,6 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
   const mutation = postWorkout();
 
   const onSubmit = (data: z.infer<typeof WorkoutTemplateSchema>) => {
-    console.log(data);
     mutation.mutate(data, {
       onSuccess: () => {
         setOpen(false);

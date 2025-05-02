@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,68 +9,68 @@ datasource db {
 }
 
 enum Gender {
-  MALE
-  FEMALE
+  MALE   @map("masculino")
+  FEMALE @map("feminino")
 }
 
 enum WorkoutType {
-  STRENGTH_TRAINING
-  HIIT
-  CARDIO
-  CROSSFIT
-  CALISTHENICS
-  PILATES
-  YOGA
-  FUNCTIONAL
+  STRENGTH_TRAINING @map("treino_de_forca")
+  HIIT              @map("hiit")
+  CARDIO            @map("cardio")
+  CROSSFIT          @map("crossfit")
+  CALISTHENICS      @map("calistenia")
+  PILATES           @map("pilates")
+  YOGA              @map("yoga")
+  FUNCTIONAL        @map("funcional")
 }
 
 enum GoalStatus {
-  ACTIVE
-  PAUSED
-  COMPLETED
-  ABANDONED
+  ACTIVE    @map("ativo")
+  PAUSED    @map("pausado")
+  COMPLETED @map("concluido")
+  ABANDONED @map("abandonado")
 }
 
 enum FitnessGoal {
-  FAT_LOSS
-  MUSCLE_GAIN
-  BODY_RECOMPOSITION
-  STRENGTH_GAIN
-  ENDURANCE_IMPROVEMENT
-  INJURY_RECOVERY
-  POSTURE_CORRECTION
-  FUNCTIONAL_FITNESS
-  DEFINITION
-  COMPETITION_PREP
+  FAT_LOSS              @map("perda_de_gordura")
+  MUSCLE_GAIN           @map("ganho_de_massa")
+  BODY_RECOMPOSITION    @map("recomposicao_corporal")
+  STRENGTH_GAIN         @map("ganho_de_forca")
+  ENDURANCE_IMPROVEMENT @map("melhora_de_resistencia")
+  INJURY_RECOVERY       @map("recuperacao_de_lesao")
+  POSTURE_CORRECTION    @map("correcao_postural")
+  FUNCTIONAL_FITNESS    @map("condicionamento_funcional")
+  DEFINITION            @map("definicao_muscular")
+  COMPETITION_PREP      @map("preparacao_para_competicao")
 }
 
 enum PhotoCategory {
-  FRONT
-  SIDE
-  BACK
-  FLEXED
-  RELAXED
+  FRONT   @map("frontal")
+  SIDE    @map("lateral")
+  BACK    @map("posterior")
+  FLEXED  @map("contraido")
+  RELAXED @map("relaxado")
 }
 
 enum TrainingFormat {
-  IN_PERSON // Presencial
-  ONLINE // Aulas online
-  HYBRID // Híbrido
-  NUTRITION_PLAN // Planejamento nutricional
+  IN_PERSON      @map("presencial")
+  ONLINE         @map("online")
+  HYBRID         @map("hibrido")
+  NUTRITION_PLAN @map("plano_nutricional")
 }
 
 enum Status {
-  ACTIVE // Aluno ou treino ativo
-  INACTIVE // Aluno ou treino inativo
-  PENDING // Aguardando alguma ação (ex: aguardando próximo treino)
-  COMPLETED // Treino ou objetivo concluído
-  IN_PROGRESS // Treino ou objetivo em andamento
-  ON_HOLD // Em espera, pode ser temporário
+  ACTIVE      @map("ativo")
+  INACTIVE    @map("inativo")
+  PENDING     @map("pendente")
+  COMPLETED   @map("concluido")
+  IN_PROGRESS @map("em_andamento")
+  ON_HOLD     @map("em_espera")
 }
 
 enum Role {
-  PERSONAL_TRAINER
-  STUDENT
+  PERSONAL_TRAINER @map("personal_trainer")
+  STUDENT          @map("aluno")
 }
 
 enum SessionStatus {
@@ -84,8 +78,8 @@ enum SessionStatus {
   CONFIRMED   @map("confirmada")
   IN_PROGRESS @map("em_andamento")
   COMPLETED   @map("concluída")
-  CANCELED    @map("cancelada")
-  MISSED      @map("não_compareceu")
+  CANCELLED   @map("cancelada")
+  NO_SHOW     @map("não_compareceu")
 }
 
 enum SessionType {
@@ -111,23 +105,22 @@ enum RecurrencePattern {
 }
 
 enum DayOfWeek {
-  MONDAY
-  TUESDAY
-  WEDNESDAY
-  THURSDAY
-  FRIDAY
-  SATURDAY
-  SUNDAY
+  MONDAY    @map("segunda-feira")
+  TUESDAY   @map("terça-feira")
+  WEDNESDAY @map("quarta-feira")
+  THURSDAY  @map("quinta-feira")
+  FRIDAY    @map("sexta-feira")
+  SATURDAY  @map("sábado")
+  SUNDAY    @map("domingo")
 }
 
 enum DifficultyLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
+  BEGINNER     @map("iniciante")
+  INTERMEDIATE @map("intermediário")
+  ADVANCED     @map("avançado")
 }
 
 enum MuscleGroup {
-  // Membros Superiores
   CHEST // Peitoral
   UPPER_CHEST // Peitoral superior
   LOWER_CHEST // Peitoral inferior
@@ -163,6 +156,44 @@ enum MuscleGroup {
   FULL_BODY // Exercícios multiarticulares
   CARDIO // Grupos usados em cardio
   POSTERIOR_CHAIN // Cadeia posterior
+}
+
+enum LocationType {
+  IN_PERSON @map("presencial")
+  ONLINE    @map("online")
+  HYBRID    @map("hibrido")
+  OUTDOOR   @map("ao_ar_livre")
+}
+
+enum TrainingPhase {
+  PREPARATION @map("preparacao")
+  BASE        @map("base")
+  BUILD       @map("construcao")
+  PEAK        @map("pico")
+  RECOVERY    @map("recuperacao")
+  TRANSITION  @map("transicao")
+}
+
+enum PriorityLevel {
+  LOW      @map("baixa")
+  MEDIUM   @map("media")
+  HIGH     @map("alta")
+  CRITICAL @map("critica")
+}
+
+enum PaymentStatus {
+  PENDING        @map("pendente")
+  PARTIALLY_PAID @map("parcialmente_pago")
+  PAID           @map("pago")
+  REFUNDED       @map("reembolsado")
+  IN_DISPUTE     @map("em_disputa")
+  CANCELLED      @map("cancelado")
+}
+
+enum RecurrenceEnd {
+  NEVER             @map("nunca")
+  AFTER_OCCURRENCES @map("apos_ocorrencias")
+  ON_DATE           @map("na_data")
 }
 
 model User {
@@ -252,19 +283,6 @@ model Student {
   updatedAt DateTime @updatedAt
 
   @@map("students")
-}
-
-model Recurrence {
-  id         String            @id @default(uuid())
-  session    Session           @relation(fields: [sessionId], references: [id])
-  sessionId  String            @unique
-  pattern    RecurrencePattern
-  interval   Int               @default(1) // Ex: 2 = a cada 2 semanas
-  endAfter   Int? // Número de ocorrências
-  endDate    DateTime? // Data final
-  exceptions DateTime[] // Datas canceladas
-
-  @@map("recurrences")
 }
 
 model Goal {
@@ -424,47 +442,93 @@ model Exercise {
   workoutDayId      String?
   exerciseInWorkout ExerciseInWorkout[]
 
+  @@unique([name, personalTrainerId], name: "name_personalTrainerId")
   @@map("exercises")
 }
 
 model Session {
-  id          String              @id @default(uuid())
-  student     Student             @relation(fields: [studentId], references: [id])
-  studentId   String
-  trainer     PersonalTrainer     @relation(fields: [trainerId], references: [id])
-  trainerId   String
-  startAt     DateTime            @db.Timestamp(6)
-  endAt       DateTime            @db.Timestamp(6)
-  location    String?
-  status      SessionStatus       @default(SCHEDULED)
-  type        SessionType
-  recurrence  Recurrence?
-  notes       String?             @db.Text
-  attachments SessionAttachment[]
+  id String @id @default(uuid())
 
-  createdAt  DateTime  @default(now()) @db.Timestamp(6)
-  updatedAt  DateTime  @updatedAt @db.Timestamp(6)
-  canceledAt DateTime? @db.Timestamp(6)
+  // Relacionamentos essenciais
+  student   Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String
+  trainer   PersonalTrainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
+  trainerId String
 
-  workout                   WorkoutTemplate?         @relation(fields: [workoutId], references: [id])
-  workoutId                 String?
-  AssignedWorkoutTemplate   AssignedWorkoutTemplate? @relation(fields: [assignedWorkoutTemplateId], references: [id])
+  // Período e localização
+  startAt      DateTime     @db.Timestamp(6)
+  endAt        DateTime     @db.Timestamp(6)
+  locationType LocationType @default(IN_PERSON)
+  street       String?
+  number       String?
+  neighborhood String?
+  city         String?
+  postalCode   String?
+
+  // Status 
+  status     SessionStatus @default(SCHEDULED)
+  phase      TrainingPhase // Periodização do treino
+  priority   PriorityLevel @default(MEDIUM)
+  ressurence Recurrence?
+
+  // Métricas de desempenho
+  rpe               Int? // Escala de Borg modificada
+  sessionRating     Int? // Qualidade geral da sessão
+  perceivedRecovery Int? // PRS - Perceived Recovery Status
+
+  // Documentação
+  observations    String? @db.Text // Observações do profissional
+  studentFeedback String? @db.Text // Feedback do aluno
+
+  // Timestamps
+  createdAt                 DateTime                 @default(now()) @db.Timestamp(6)
+  updatedAt                 DateTime                 @updatedAt @db.Timestamp(6)
+  canceledAt                DateTime?                @db.Timestamp(6)
+  completedAt               DateTime?                @db.Timestamp(6)
+  workoutTemplate           WorkoutTemplate?         @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
+  workoutTemplateId         String?
+  assignedWorkoutTemplate   AssignedWorkoutTemplate? @relation(fields: [assignedWorkoutTemplateId], references: [id], onDelete: Cascade)
   assignedWorkoutTemplateId String?
 
+  // Índices
   @@index([studentId, startAt])
   @@index([trainerId, startAt])
+  @@index([status, startAt])
   @@map("sessions")
 }
 
-model SessionAttachment {
-  id        String         @id @default(uuid())
-  session   Session        @relation(fields: [sessionId], references: [id])
-  sessionId String
-  url       String
-  type      AttachmentType
-  createdAt DateTime       @default(now())
+model Recurrence {
+  id        String  @id @default(uuid())
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String  @unique
 
-  @@map("session_attachments")
+  // Padrão base de recorrência
+  pattern  RecurrencePattern
+  interval Int               @default(1) // Intervalo entre ocorrências
+
+  // Configuração por tipo de padrão
+  daily   Json? // { weekdays: boolean } para dias úteis/diário
+  weekly  Json? // { daysOfWeek: DayOfWeek[] }
+  monthly Json? // { dayOfMonth: Int, mode: 'day'|'week' }
+
+  // Limites da recorrência
+  startDate    DateTime      @default(now())
+  endCondition RecurrenceEnd @default(NEVER)
+  endAfter     Int? // Número de ocorrências
+  endDate      DateTime? // Data final absoluta
+
+  // Exceções e ajustes
+  excludedDates DateTime[] // Datas específicas a ignorar
+  adjustedDates Json? // { original: DateTime, adjusted: DateTime }[]
+
+  // Timezone e fuso horário
+  timezone String @default("America/Sao_Paulo")
+
+  // Metadados
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("recurrences")
 }
 
 model Diet {

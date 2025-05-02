@@ -16,11 +16,7 @@ import {
   ChartContainer,
   ChartTooltip,
 } from "@/components/ui/chart";
-import { useMemo } from "react";
 import { getTopExercises } from "@/features/personal/student/api/top-exercises";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
-import { buttonVariants } from "@/components/ui/button";
 import { NoData } from "../../../components/reusable/no-data";
 
 const chartConfig = {} satisfies ChartConfig;

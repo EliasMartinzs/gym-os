@@ -110,3 +110,25 @@ export function formatDurationFromDays(days: number): string {
     remainingMonths !== 1 ? "s" : ""
   }`;
 }
+
+/**
+ * Formata uma data para retornar o nome do dia, número do dia e ano em sequência
+ * @param date - Pode ser uma string de data, um objeto Date ou um timestamp
+ * @returns String no formato "Dia-da-Semana, DD/AAAA" (ex: "Segunda-feira, 15/06/2023")
+ */
+export function formatFullDate(date: string | Date | number) {
+  const newDate = new Date(date);
+
+  if (isNaN(newDate.getTime())) {
+    throw new Error("Data inválida fornecida");
+  }
+
+  const weekDay = newDate.toLocaleDateString("pt-BR", { weekday: "long" });
+  const day = newDate.getDate();
+  const month = newDate.getMonth() + 1;
+  const year = newDate.getFullYear();
+
+  const weekDayFormated = weekDay.charAt(0).toUpperCase() + weekDay.slice(1);
+
+  return `${weekDayFormated}, ${day}/${month}/${year}`;
+}

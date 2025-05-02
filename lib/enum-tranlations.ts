@@ -130,9 +130,6 @@ export const EnumTranslations = {
   },
 } as const;
 
-// Tipagem para autocompletar
-type TranslatedEnum = typeof EnumTranslations;
-
 export const SelectOptions = {
   Gender: [
     { value: "MALE", label: "Masculino" },
@@ -264,3 +261,12 @@ export const SelectOptions = {
     { value: "POSTERIOR_CHAIN", label: "Cadeia Posterior" },
   ],
 };
+
+export const StatusColor = {
+  ACTIVE: "#4CAF50",
+  INACTIVE: "#9E9E9E",
+  PENDING: "#FFC107",
+  COMPLETED: "#2196F3",
+  IN_PROGRESS: "#FF9800",
+  ON_HOLD: "#607D8B",
+} as const;

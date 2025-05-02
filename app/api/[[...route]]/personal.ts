@@ -7,7 +7,12 @@ import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { zValidator } from "@hono/zod-validator";
-import { TrainingFormat } from "@prisma/client";
+import {
+  DifficultyLevel,
+  FitnessGoal,
+  Prisma,
+  TrainingFormat,
+} from "@prisma/client";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -367,6 +372,7 @@ const app = new Hono()
   })
   .get("workouts", clerkMiddleware(), async (c) => {
     const auth = getAuth(c);
+    const { goal, difficulty } = c.req.query();
 
     if (!auth?.userId) {
       return c.json(
@@ -381,13 +387,23 @@ const app = new Hono()
       const workouts = await prisma.workoutTemplate.findMany({
         where: {
           trainerId: personalTrainer?.id,
-          AND: {
-            isReusable: true,
-          },
+          isReusable: true,
+          ...(goal && {
+            defaultGoal: {
+              has: goal as FitnessGoal,
+            },
+          }),
+          ...(difficulty && {
+            defaultLevel: difficulty as DifficultyLevel,
+          }),
         },
         include: {
           assignedInstances: true,
-          creator: true,
+          creator: {
+            include: {
+              user: true,
+            },
+          },
           days: {
             include: {
               exerciseInWorkout: true,
@@ -447,6 +463,7 @@ const app = new Hono()
           ? await prisma.student.findMany({
               ...baseQuery,
               include: {
+                workoutTemplate: true,
                 ...baseQuery.include,
               },
             })
@@ -482,6 +499,128 @@ const app = new Hono()
         },
         401
       );
+    }
+  })
+  .get("student/:id", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+    const id = c.req.param("id");
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    if (!id) {
+      return c.json(
+        { success: false, message: "Usuário não encontrado", data: null },
+        401
+      );
+    }
+
+    try {
+      const student = await prisma.user.findFirst({
+        where: {
+          id: id,
+        },
+        include: {
+          student: {
+            include: {
+              diet: true,
+              injuries: true,
+              goal: true,
+              progressPhoto: true,
+              workoutTemplate: {
+                include: {
+                  assignedInstances: {
+                    include: {
+                      template: true,
+                    },
+                  },
+                  days: {
+                    include: {
+                      exercises: true,
+                      exerciseInWorkout: true,
+                    },
+                  },
+                },
+              },
+              session: true,
+            },
+          },
+        },
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: student,
+      });
+    } catch (error: any) {
+      console.error(error);
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
+    }
+  })
+  .get("students-session", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await getPersonalTrainerById(auth.userId);
+
+      const students = await prisma.student.findMany({
+        where: {
+          personalTrainerId: personalTrainer?.id,
+          workoutTemplate: {
+            some: {},
+          },
+          AssignedWorkoutTemplate: {
+            some: {},
+          },
+        },
+        select: {
+          id: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+          workoutTemplate: {
+            select: {
+              id: true,
+            },
+          },
+          AssignedWorkoutTemplate: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: students,
+      });
+    } catch (error: any) {
+      console.error(error);
+      return c.json({
+        success: false,
+        message: error.message,
+        data: null,
+      });
     }
   })
   .post(
@@ -607,9 +746,9 @@ const app = new Hono()
 
       try {
         const personalTrainer = await getPersonalTrainerById(auth.userId);
-
-        if (!personalTrainer)
+        if (!personalTrainer) {
           throw new Error("Personal trainer não encontrado");
+        }
 
         const baseData = {
           trainerId: personalTrainer.id,
@@ -620,74 +759,105 @@ const app = new Hono()
           defaultGoal: json.config.goals,
           defaultLevel: json.config.level,
           defaultTags: json.config.tags,
-          days: {
-            create: json.days.map((day: any) => ({
-              name: day.name,
-              dayOfWeek: day.dayOfWeek,
-              focusMuscle: day.focusMuscle,
-              order: 0,
-              exercises: {
-                create: day.exercises.map((ex: any) => ({
-                  equipment: ex.equipment || "",
-                  difficulty: ex.difficulty || "",
-                  instructions: ex.instructions || "",
-                  muscle: ex.muscle || "",
-                  type: ex.type || "",
-                  name: ex.exerciseId,
-                  personalTrainerId: personalTrainer.id,
-                  studentId: !json.isReusable
-                    ? json.assigned?.studentId
-                    : undefined,
-                })),
-              },
-            })),
-          },
         };
 
-        const nonReusableData = json.isReusable
-          ? {}
-          : {
-              studentId: json.assigned!.studentId,
+        const nonReusableData = !json.isReusable
+          ? {
+              studentId: json.assigned.studentId,
               assignedInstances: {
                 create: {
                   trainerId: personalTrainer.id,
-                  studentId: json.assigned!.studentId,
-                  startDate: json.assigned!.startDate,
-                  endDate: json.assigned!.endDate,
-                  isActive: json.assigned!.isActive,
-                  notes: json.assigned!.notes,
+                  studentId: json.assigned.studentId,
+                  startDate: json.assigned.startDate,
+                  endDate: json.assigned.endDate,
+                  isActive: json.assigned.isActive,
+                  notes: json.assigned.notes || "",
                   customGoal: json.config.goals,
                   customLevel: json.config.level,
-                  customTags: json.config.tags,
+                  customTags: json.config.tags || [],
                 },
               },
-            };
+            }
+          : {};
 
         const workout = await prisma.workoutTemplate.create({
           data: {
             ...baseData,
             ...nonReusableData,
+            days: {
+              create: json.days.map((day: any) => ({
+                name: day.name,
+                dayOfWeek: day.dayOfWeek,
+                focusMuscle: day.focusMuscle,
+                order: 0,
+                exercises: {
+                  create: day.exercises.map((ex: any) => ({
+                    name: ex.exerciseId,
+                    equipment: ex.equipment || "",
+                    difficulty: ex.difficulty || "",
+                    instructions: ex.instructions || "",
+                    muscle: ex.muscle || "",
+                    type: ex.type || "",
+                    personalTrainerId: personalTrainer.id,
+                    studentId: !json.isReusable
+                      ? json.assigned?.studentId
+                      : undefined,
+                  })),
+                },
+                exerciseInWorkout: {
+                  create: day.exercises.map((ex: any) => ({
+                    exercise: {
+                      connect: {
+                        name_personalTrainerId: {
+                          name: ex.exerciseId,
+                          personalTrainerId: personalTrainer.id,
+                        },
+                      },
+                    },
+                    order: ex.order || 0,
+                    sets: ex.sets,
+                    reps: ex.reps,
+                    rest: ex.rest,
+                  })),
+                },
+              })),
+            },
           },
           include: {
             days: {
-              include: { exercises: true },
+              include: {
+                exercises: true,
+                exerciseInWorkout: {
+                  include: {
+                    exercise: true,
+                  },
+                },
+              },
             },
             assignedInstances: true,
           },
         });
 
-        return c.json({ success: true, message: null, data: workout });
+        return c.json({
+          success: true,
+          message: "Treino criado com sucesso",
+          data: workout,
+        });
       } catch (error: any) {
-        console.error(error);
+        console.error("Erro ao criar template:", error);
         return c.json(
-          { success: false, message: error.message, data: null },
+          {
+            success: false,
+            message: error.message || "Erro ao criar template de treino",
+            data: null,
+          },
           500
         );
       }
     }
   )
   .delete(
-    "/delete-student/:id",
+    "delete-student/:id",
     clerkMiddleware(),
     zValidator("param", z.object({ id: z.string() })),
     async (c) => {
@@ -726,6 +896,46 @@ const app = new Hono()
         return c.json({
           success: false,
           message: "Houve um erro ao deletar estudante, tente novamente!",
+        });
+      }
+    }
+  )
+  .delete(
+    "delete-workout/:id",
+    clerkMiddleware(),
+    zValidator("param", z.object({ id: z.string() })),
+    async (c) => {
+      const auth = getAuth(c);
+      const { id } = c.req.valid("param");
+
+      if (!auth?.userId) {
+        return c.json(
+          { success: false, message: "Usuário não autenticado" },
+          401
+        );
+      }
+
+      if (!id) {
+        return c.json({ success: false, message: "Id não encontrado" }, 400);
+      }
+
+      try {
+        await prisma.workoutTemplate.delete({
+          where: {
+            id: id,
+          },
+        });
+
+        return c.json({
+          success: true,
+          message: "Template deletado com sucesso",
+        });
+      } catch (error: any) {
+        console.log(error);
+
+        return c.json({
+          success: false,
+          message: "Houve um erro ao deletar Template, tente novamente!",
         });
       }
     }

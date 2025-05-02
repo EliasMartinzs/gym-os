@@ -13,7 +13,7 @@ export const NewTemplateWorkout = () => {
       setOpen={setOpen}
       trigger={
         <Button className="flex gap-x-2 cursor-pointer">
-          Novo treino <PlusCircle />
+          Novo template treino <PlusCircle />
         </Button>
       }
       key={"new-template-modal"}

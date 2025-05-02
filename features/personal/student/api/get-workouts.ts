@@ -1,11 +1,15 @@
 import client from "@/lib/client";
 import { useQuery } from "@tanstack/react-query";
 
-export const getWorkouts = () => {
+export const getWorkouts = (filters?: URLSearchParams) => {
   const query = useQuery({
-    queryKey: ["workouts"],
+    queryKey: ["workouts", filters?.toString()],
     queryFn: async () => {
-      const response = await client.api.personal.workouts.$get();
+      const paramsObject = filters ? Object.fromEntries(filters.entries()) : {};
+
+      const response = await client.api.personal.workouts.$get({
+        query: paramsObject,
+      });
 
       if (!response.ok) {
         return {

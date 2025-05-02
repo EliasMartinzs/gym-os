@@ -1,4 +1,10 @@
-import { Dumbbell, LayoutPanelLeft, Users, Utensils } from "lucide-react";
+import {
+  Calendar,
+  Dumbbell,
+  LayoutPanelLeft,
+  Users,
+  Utensils,
+} from "lucide-react";
 
 const personalLinks = [
   {
@@ -21,6 +27,12 @@ const personalLinks = [
   },
   {
     id: 4,
+    title: "Agenda",
+    icon: <Calendar />,
+    href: "/personal/calendar",
+  },
+  {
+    id: 5,
     title: "Dietas",
     icon: <Utensils />,
     href: "/personal/diets",

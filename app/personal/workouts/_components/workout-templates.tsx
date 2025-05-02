@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,20 +9,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getWorkouts } from "@/features/personal/student/api/get-workouts";
-import { DifficultyLevel, FitnessGoal } from "@prisma/client";
-import { HelpCircle, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Workout } from "./workout";
-import { Tooltip } from "@/components/reusable/tootip";
 import Image from "next/image";
 import NoDataImg from "@/public/undraw_no-data_ig65.svg";
-
-export type WithEnums<T> = T & {
-  goal: FitnessGoal[];
-  level: DifficultyLevel | null;
-};
+import { WorkoutFilters } from "./workout-filters";
+import { useSearchParams } from "next/navigation";
+import { Separator } from "@/components/ui/separator";
 
 export const WorkoutTemplates = () => {
-  const { data, isLoading, isError, refetch } = getWorkouts();
+  const searchParams = useSearchParams();
+  const filters = new URLSearchParams(searchParams.toString());
+
+  const { data, isLoading, isError, refetch } = getWorkouts(filters);
 
   if (isLoading) {
     return (
@@ -39,6 +39,35 @@ export const WorkoutTemplates = () => {
           Tente novamente
         </Button>
       </div>
+    );
+  }
+
+  if (searchParams.toString() && data?.data?.length === 0) {
+    return (
+      <>
+        <WorkoutFilters />
+        <Card>
+          <CardHeader className="space-y-4 text-center">
+            <CardTitle>Nenhum resultado encontrado</CardTitle>
+            <CardDescription className="space-y-4">
+              <p>
+                Parece que não encontramos nenhum dado correspondente aos
+                filtros selecionados.
+              </p>
+            </CardDescription>
+          </CardHeader>
+
+          <CardContent className="relative size-96 mx-auto mt-10">
+            <Image
+              src={NoDataImg}
+              fill
+              className="object-contain size-96"
+              alt="no-data"
+              loading="lazy"
+            />
+          </CardContent>
+        </Card>
+      </>
     );
   }
 
@@ -76,26 +105,12 @@ export const WorkoutTemplates = () => {
 
   return (
     <div>
-      <div className="w-full flex items-center gap-x-4">
-        <h2 className="text-2xl italic from-muted">Meus templates</h2>
-        <Tooltip
-          text={
-            <div className="flex flex-col mx-auto max-w-sm gap-y-2 text-start">
-              <p className="font-medium">
-                Aqui você encontrará seus templates reutilizáveis.
-              </p>
+      {/* Filters template */}
+      <WorkoutFilters />
 
-              <p>
-                - Eles permitem que você aplique modelos já criados a outros
-                usuários de forma prática e personalizada, conforme a sua
-                necessidade.
-              </p>
-            </div>
-          }
-          trigger={<HelpCircle className="size-5" />}
-        />
-      </div>
+      <Separator />
 
+      {/* Card Templates */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-5">
         {data?.data?.map((workout) => (
           <Workout workout={workout} key={workout.id} />

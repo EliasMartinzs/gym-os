@@ -31,18 +31,19 @@ export const postWorkout = () => {
       return await response.json();
     },
     onSuccess: async (data) => {
-      toast.success(data.message || "Usuário criado com sucesso", {
+      toast.success(data.message || "Template criado com sucesso", {
         id: "student",
       });
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["students"] }),
         queryClient.invalidateQueries({ queryKey: ["status"] }),
         queryClient.invalidateQueries({ queryKey: ["students-by-birthdate"] }),
+        queryClient.invalidateQueries({ queryKey: ["workout"] }),
         queryClient.invalidateQueries({ queryKey: ["workouts"] }),
       ]);
     },
     onError: (error) => {
-      toast.error(error.message || "Erro ao criar usuário", {
+      toast.error(error.message || "Erro ao criar template", {
         id: "student",
       });
     },

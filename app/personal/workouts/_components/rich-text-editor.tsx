@@ -36,6 +36,9 @@ import { FontFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/fon
 import { $getRoot } from "lexical";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $generateHtmlFromNodes } from "@lexical/html";
+import { FontColorToolbarPlugin } from "@/components/editor/plugins/toolbar/font-color-toolbar-plugin";
+import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar/font-background-toolbar-plugin";
+import { ElementFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/element-format-toolbar-plugin";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -107,7 +110,7 @@ export function Plugins() {
       {/* toolbar plugins */}
       <ToolbarPlugin>
         {({ blockType }) => (
-          <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto border-b p-1">
+          <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto p-3 no-scrollbar">
             <BlockFormatDropDown>
               <FormatParagraph />
               <FormatHeading levels={["h1", "h2", "h3"]} />
@@ -121,6 +124,9 @@ export function Plugins() {
             <FontFormatToolbarPlugin format="italic" />
             <FontFormatToolbarPlugin format="underline" />
             <FontFormatToolbarPlugin format="strikethrough" />
+            <FontColorToolbarPlugin />
+            <FontBackgroundToolbarPlugin />
+            <ElementFormatToolbarPlugin />
           </div>
         )}
       </ToolbarPlugin>
@@ -132,7 +138,7 @@ export function Plugins() {
               <div className="" ref={onRef}>
                 <ContentEditable
                   placeholder={placeholder}
-                  className="ContentEditable__root relative block min-h-72 overflow-auto px-8 py-4 focus:outline-none h-72"
+                  className="ContentEditable__root relative block min-h-72 overflow-auto px-4 focus:outline-none h-72"
                 />
               </div>
             </div>

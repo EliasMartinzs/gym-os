@@ -1,5 +1,3 @@
-import { InferResponseType } from "hono";
-import client from "@/lib/client";
 import {
   Card,
   CardContent,
@@ -8,76 +6,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import client from "@/lib/client";
+import { InferResponseType } from "hono";
 import { EnumTranslations } from "../../../../lib/enum-tranlations";
-import { useState } from "react";
-import { ExpandablePanel } from "@/components/reusable/expandable-panel";
-import { DifficultyLevel, FitnessGoal } from "@prisma/client";
-import { Button } from "@/components/ui/button";
+import { usePanelSlice } from "@/features/personal/student/hooks/use-expandable-panel";
+import { WorkoutPanel } from "./workout-panel";
+import { DeleteWorkout } from "./delete-workout";
 
 type ApiResponse = InferResponseType<typeof client.api.personal.workouts.$get>;
 
 type SingleWorkout = NonNullable<ApiResponse["data"]>[number];
 
-type WorkoutProps = {
+export type WorkoutProps = {
   workout: SingleWorkout;
 };
 
 export const Workout = ({ workout }: WorkoutProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const { openPanel, closePanel } = usePanelSlice();
 
-  const { name, id, defaultGoal, defaultLevel, defaultTags, description } =
+  const { name, defaultGoal, defaultLevel, defaultTags, description, id } =
     workout;
 
   return (
-    <ExpandablePanel
-      isExpanded={isExpanded}
-      setIsExpanded={setIsExpanded}
-      triggerElement={
-        <TriggerCardWorkout
-          name={name}
-          defaultGoal={defaultGoal}
-          defaultLevel={defaultLevel}
-          defaultTags={defaultTags}
-          description={description}
-        />
-      }
+    <Card
+      className="h-fit cursor-pointer relative"
+      onClick={() => {
+        openPanel(<WorkoutPanel workout={workout} closePanel={closePanel} />);
+      }}
     >
-      <div className="relative">
-        <TriggerCardWorkout
-          name={name}
-          defaultGoal={defaultGoal}
-          defaultLevel={defaultLevel}
-          defaultTags={defaultTags}
-          description={description}
-        />
-
-        <Button
-          variant="primary"
-          className="absolute top-4 right-4 z-50"
-          onClick={() => setIsExpanded(false)}
-        >
-          ✕
-        </Button>
-      </div>
-    </ExpandablePanel>
-  );
-};
-
-const TriggerCardWorkout = ({
-  defaultGoal,
-  defaultLevel,
-  defaultTags,
-  description,
-  name,
-}: {
-  name: string;
-  defaultGoal: FitnessGoal[];
-  defaultLevel: DifficultyLevel | null;
-  defaultTags: string[];
-  description: string | null;
-}) => {
-  return (
-    <Card className="h-full">
       <CardHeader className="space-y-3">
         <CardTitle className="text-lg font-bold">{name}</CardTitle>
         <CardDescription
@@ -134,6 +90,12 @@ const TriggerCardWorkout = ({
           )}
         </div>
       </CardContent>
+      <div
+        className="absolute top-5 right-5"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <DeleteWorkout closePanel={closePanel} id={id} />
+      </div>
     </Card>
   );
 };

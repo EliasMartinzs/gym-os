@@ -3,15 +3,8 @@
 import { ColumnDef } from "@tanstack/react-table";
 import Image from "next/image";
 
+import { ResponsiveModal } from "@/components/reusable/responsive-modal";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,9 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { deleteStudent } from "@/features/personal/student/api/delete-student";
-import { MoreHorizontal, Trash } from "lucide-react";
+import { MoreHorizontal, Trash, UserRound } from "lucide-react";
 import { useState } from "react";
-import { ResponsiveModal } from "@/components/reusable/responsive-modal";
+import { useRouter } from "next/navigation";
 
 export interface StudentTableData {
   id: string;
@@ -40,6 +33,7 @@ export const columns: ColumnDef<StudentTableData>[] = [
       const student = row.original;
       const { mutate } = deleteStudent(student.id);
       const [open, setOpen] = useState(false);
+      const router = useRouter();
 
       return (
         <DropdownMenu>
@@ -52,9 +46,25 @@ export const columns: ColumnDef<StudentTableData>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Açoes</DropdownMenuLabel>
             <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Button
+                variant="ghost"
+                className="cursor-pointer justify-start"
+                size="full"
+                onClick={() => router.push(`/personal/student/${student.id}`)}
+              >
+                Perfil <UserRound className="ml-2" />
+              </Button>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
             <ResponsiveModal
               trigger={
-                <Button variant="ghost" className="cursor-pointer">
+                <Button
+                  variant="ghost"
+                  className="cursor-pointer justify-start"
+                  size="full"
+                >
                   Deletar estudante <Trash className="ml-2" />
                 </Button>
               }

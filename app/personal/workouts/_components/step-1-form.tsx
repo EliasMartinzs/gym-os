@@ -42,12 +42,10 @@ export const Step1Form = ({ form }: Props) => {
         control={form.control}
         name="description"
         render={({ field }) => (
-          <FormItem>
+          <FormItem className="xl:min-w-6xl">
             <FormLabel>Descrição (Opcional)</FormLabel>
             <FormControl>
-              <div>
-                <RichTextEditor onChange={field.onChange} />
-              </div>
+              <RichTextEditor onChange={field.onChange} />
             </FormControl>
             <FormMessage />
           </FormItem>
