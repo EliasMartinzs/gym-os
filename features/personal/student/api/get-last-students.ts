@@ -1,5 +1,6 @@
 import client from "@/lib/client";
 import { useQuery } from "@tanstack/react-query";
+import { InferResponseType } from "hono";
 
 export const getLastStudents = () => {
   const query = useQuery({
@@ -7,15 +8,15 @@ export const getLastStudents = () => {
     queryFn: async () => {
       const response = await client.api.personal["last-students"].$get();
 
-      const result = await response.json();
-
-      if (!result.success) {
+      if (!response.ok) {
         return {
           success: false,
           message: null,
           data: null,
         };
       }
+
+      const result = await response.json();
 
       return result;
     },

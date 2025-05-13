@@ -89,7 +89,6 @@ export const todaySessionsMock = [
     createdAt: new Date(),
     updatedAt: new Date(),
     canceledAt: null,
-
     student: {
       user: {
         name: "Aluno Demonstração",
@@ -113,7 +112,7 @@ export function TodaySessions() {
       (a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime()
     );
 
-  const isError = true;
+  const isError = false;
 
   if (isError) {
     return (

@@ -11,11 +11,12 @@ export const config: PageConfig = {
 
 const app = new Hono().basePath("/api");
 
-const route = app.route("/personal", personal);
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _route = app.route("/personal", personal);
 
 export const GET = handle(app);
 export const POST = handle(app);
 export const DELETE = handle(app);
 export const PATCH = handle(app);
 
-export type AppType = typeof route;
+export type AppType = typeof _route;

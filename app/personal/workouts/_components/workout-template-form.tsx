@@ -74,6 +74,7 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
   const { trigger } = form;
 
   const isReusable = form.watch("isReusable");
+  console.log(isReusable);
 
   const validateCurrentStep = async () => {
     if (step === 1) {

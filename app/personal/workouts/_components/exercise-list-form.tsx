@@ -12,7 +12,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,7 +40,7 @@ export const ExerciseListForm = ({
   dayIndex: number;
 }) => {
   const { control } = form;
-  const { fields, append, remove } = useFieldArray({
+  const { fields, remove } = useFieldArray({
     control,
     name: `days.${dayIndex}.exercises`,
   });

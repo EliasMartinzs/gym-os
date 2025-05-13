@@ -58,7 +58,8 @@ export const NewStudentForm = ({ setClose }: Props) => {
   function onSubmit(values: NewStudenFormValues) {
     mutation.mutate(values, {
       onSuccess: () => {
-        form.reset(), setClose();
+        form.reset();
+        setClose();
       },
     });
   }

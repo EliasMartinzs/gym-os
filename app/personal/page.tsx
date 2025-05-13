@@ -1,6 +1,5 @@
 import { Main } from "@/components/reusable/main";
 import { LastStudents } from "./_dashboard/last-students";
-import { TodaySessions } from "./_dashboard/today-session";
 import { TopExercisesChart } from "./_dashboard/top-exercises-chart";
 import { TotalStudentChart } from "./_dashboard/total-student";
 import { TrainingFormatChart } from "./_dashboard/training-format-chart";
@@ -19,9 +18,7 @@ export default function Personal() {
           <div className="lg:col-span-4">
             <LastStudents />
           </div>
-          <div className="lg:col-span-8">
-            <TodaySessions />
-          </div>
+          <div className="lg:col-span-8"></div>
         </div>
       </div>
     </Main>

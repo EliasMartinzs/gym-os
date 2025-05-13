@@ -6,23 +6,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { WorkoutTemplateSchema } from "@/lib/validations";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Loader2 } from "lucide-react";
-import { UseFormReturn } from "react-hook-form";
-import { z } from "zod";
-import { ConfigForm } from "./config-form";
-import { getStudents } from "@/features/personal/student/api/get-students";
-import { useMemo } from "react";
 import {
   Select,
   SelectContent,
@@ -30,7 +20,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import Link from "next/link";
+import { getStudents } from "@/features/personal/student/api/get-students";
+import { cn } from "@/lib/utils";
+import { WorkoutTemplateSchema } from "@/lib/validations";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, Loader2 } from "lucide-react";
+import { useMemo } from "react";
+import { UseFormReturn } from "react-hook-form";
+import { z } from "zod";
+import { ConfigForm } from "./config-form";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -62,23 +61,6 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
       <div className="w-full text-center">Houve um erro tente novamente!</div>
     );
 
-  if (
-    !students ||
-    (students.length === 0 && form.watch("isReusable") === false)
-  ) {
-    return (
-      <div className="space-y-5 mb-8 flex items-center justify-center flex-col">
-        <Link
-          href="/personal/students"
-          className={buttonVariants({ variant: "ghost", className: "text-xl" })}
-        >
-          Nenhum aluno cadastrado. Clique para adicionar seu primeiro aluno!
-        </Link>
-        <p>Cada aluno pode ter apenas um template de treino associado.</p>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {!form.watch("isReusable") ? (
@@ -96,7 +78,7 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {students.map((option) => (
+                    {students?.map((option) => (
                       <SelectItem key={option.id} value={option.id}>
                         {option.name}
                       </SelectItem>

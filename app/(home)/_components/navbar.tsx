@@ -45,10 +45,7 @@ const Navbar = () => {
           <SheetTrigger>
             <Menu className="block lg:hidden cursor-pointer" />
           </SheetTrigger>
-          <SheetContent
-            colorClose="text-white"
-            className="bg-[#434343] border-none w-full h-full flex items-center justify-center gap-y-10"
-          >
+          <SheetContent className="bg-[#434343] border-none w-full h-full flex items-center justify-center gap-y-10">
             <SheetHeader>
               <SheetTitle className="text-white text-center text-5xl font-black">
                 Gym-OS

@@ -1,5 +1,6 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -12,20 +13,10 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { useState } from "react";
 import { ALL_EXERCISES } from "@/constants/exercises";
-
-interface Exercise {
-  name: string;
-  type: string;
-  muscle: string;
-  equipment: string;
-  difficulty: string;
-  instructions: string;
-}
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
 
 interface ExercisesSelectProps {
   selectedExercise: string; // Agora será o name do exercício

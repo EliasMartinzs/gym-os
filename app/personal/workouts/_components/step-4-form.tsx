@@ -1,5 +1,13 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
   FormControl,
   FormField,
   FormItem,
@@ -7,6 +15,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
@@ -16,28 +29,15 @@ import {
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnumTranslations, SelectOptions } from "@/lib/enum-tranlations";
+import { cn } from "@/lib/utils";
 import { WorkoutTemplateFormValues } from "@/lib/validations";
+import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import { MuscleGroup } from "@prisma/client";
 import { Check, ChevronsUpDown, PlusCircle, Trash2 } from "lucide-react";
-import { useFieldArray, UseFormReturn } from "react-hook-form";
-import { ExerciseListForm } from "./exercise-list-form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import Image from "next/image";
 import { useEffect } from "react";
+import { useFieldArray, UseFormReturn } from "react-hook-form";
+import { ExerciseListForm } from "./exercise-list-form";
 
 interface Props {
   form: UseFormReturn<WorkoutTemplateFormValues>;
@@ -81,7 +81,7 @@ export const Step4Form = ({ form }: Props) => {
 
   useEffect(() => {
     form.trigger("days");
-  }, [watchDays]);
+  }, [watchDays, form]);
 
   const removeDay = (index: number) => {
     remove(index);
@@ -226,7 +226,7 @@ export const Step4Form = ({ form }: Props) => {
                                           : [...currentValues, muscle.value];
                                         form.setValue(
                                           `days.${dayIndex}.focusMuscle`,
-                                          newValue as any
+                                          newValue as MuscleGroup[]
                                         );
                                       }}
                                     >

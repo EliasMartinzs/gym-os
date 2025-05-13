@@ -1,21 +1,18 @@
-import { z } from "zod";
 import {
-  FitnessGoal,
-  DifficultyLevel,
   DayOfWeek,
-  MuscleGroup,
-  Role,
-  Status,
-  TrainingFormat,
+  DifficultyLevel,
+  FitnessGoal,
   LocationType,
-  SessionStatus,
-  TrainingPhase,
+  MuscleGroup,
   PriorityLevel,
   RecurrencePattern,
-  RecurrenceEnd,
+  Role,
+  ScheduleType,
+  SessionStatus,
+  Status,
+  TrainingFormat,
 } from "@prisma/client";
-
-const MonthlyMode = z.enum(["day", "week"]);
+import { z } from "zod";
 
 export const workoutTemplateFormEditSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
@@ -142,163 +139,121 @@ export const NewStudentSchema = z.object({
 
 export type NewStudenFormValues = z.infer<typeof NewStudentSchema>;
 
-export const SessionSchema = z.object({
-  studentId: z.string().min(1, "Selecione o aluno"),
-  workoutTemplateId: z.string().min(1, ""),
-  assignedWorkoutTemplateId: z.string().min(1, ""),
-  startAt: z.date({
-    required_error: "A data e hora incial é obrigatória",
-    invalid_type_error: "Deve ser uma data válida",
+const SessionCommonSessionFields = z.object({
+  studentId: z.string().min(1, {
+    message: "Escolha um aluno",
   }),
-  endAt: z.date({
-    required_error: "A data e hora final é obrigatória",
-    invalid_type_error: "Deve ser uma data válida",
+  workoutTemplateId: z.string().min(1),
+  assignedWorkoutTemplateId: z.string().min(1),
+  status: z.nativeEnum(SessionStatus, {
+    message: "Escolha o status do atendimento",
   }),
-  locationType: z
-    .nativeEnum(LocationType, {
-      required_error: "Selecione o tipo de atendimento",
-    })
-    .default("IN_PERSON"),
-  street: z.string().optional(),
-  number: z.string().optional(),
-  neighborhood: z.string().optional(),
-  city: z.string().optional(),
-  postalCode: z.string().optional(),
-  status: z
-    .nativeEnum(SessionStatus, {
-      required_error: "Selecione o status do atendimento",
-    })
-    .default("SCHEDULED"),
-  phase: z
-    .nativeEnum(TrainingPhase, {
-      required_error: "Selecione a periodização do treino",
-    })
-    .default("BASE"),
-  priority: z
-    .nativeEnum(PriorityLevel, {
-      required_error: "Selecione a prioridade do atendimento",
-    })
-    .default("MEDIUM"),
+  priority: z.nativeEnum(PriorityLevel, {
+    message: "Selecione a prioridade do atendimento",
+  }),
   observations: z.string().optional(),
 });
 
+const OnlineSession = z.object({
+  locationType: z.literal(LocationType.ONLINE),
+});
+
+const AddressRequiredSession = z.object({
+  locationType: z.enum([
+    LocationType.IN_PERSON,
+    LocationType.HYBRID,
+    LocationType.OUTDOOR,
+  ]),
+  street: z.string().min(1, "Rua é obrigatória"),
+  number: z.string().min(1, "Número é obrigatório"),
+  neighborhood: z.string().min(1, "Bairro é obrigatório"),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  postalCode: z.string().min(1, "CEP é obrigatório"),
+});
+
+const LocationSpecificSchema = z.discriminatedUnion("locationType", [
+  OnlineSession,
+  AddressRequiredSession,
+]);
+
+export const SessionSchema = LocationSpecificSchema.and(
+  SessionCommonSessionFields
+);
+
 export type SessionFormValues = z.infer<typeof SessionSchema>;
 
-const DailySettings = z
-  .object({
-    weekdays: z.boolean().optional().default(false),
-  })
-  .strict();
+const baseRecurrenceSchema = z.object({
+  startDate: z.coerce.date({
+    required_error: "Data de início é obrigatória",
+    invalid_type_error: "Formato de data inválido (use YYYY-MM-DD)",
+  }),
+  endDate: z.coerce.date().optional(),
+  durationMinutes: z
+    .number()
+    .int("Duração deve ser um número inteiro")
+    .min(30, "Mínimo de 30 minutos por sessão")
+    .max(180, "Máximo de 3 horas por sessão"),
+  hours: z.string().min(1, {
+    message: "Horario do atendimento",
+  }),
+});
 
-const WeeklySettings = z
-  .object({
-    daysOfWeek: z
-      .nativeEnum(DayOfWeek, {
-        required_error: "Selecione um dia",
-      })
-      .default("MONDAY"),
-  })
-  .strict();
+const dailySchema = baseRecurrenceSchema.extend({
+  repeat: z.literal(RecurrencePattern.DAILY, {
+    message: "Selecione o tipo de recorrência",
+  }),
+  scheduleType: z.nativeEnum(ScheduleType, {
+    message: "Selecione o tipo de atendimento",
+    invalid_type_error: "Selecione o tipo de atendimento",
+    required_error: "Selecione o tipo de atendimento",
+  }),
+});
 
-const MonthlySettings = z
-  .object({
-    dayOfMonth: z.number().int().min(1).max(31, "Dia inválido"),
-    mode: MonthlyMode.optional().default("day"),
-  })
-  .strict();
+const weeklySchema = baseRecurrenceSchema.extend({
+  repeat: z.literal(RecurrencePattern.WEEKLY, {
+    message: "Selecione o tipo de recorrência",
+  }),
+  daysOfWeek: z.array(
+    z.nativeEnum(DayOfWeek, {
+      message: "Selecione no mínimo 1 dia da semana",
+    })
+  ),
+  occurrenceCount: z.number().optional(),
+});
 
-export const RecurrenceSchema = z
-  .object({
-    pattern: z
-      .nativeEnum(RecurrencePattern, {
-        required_error: "Selecione o padrão de recorrência",
-      })
-      .default("DAILY"),
-    interval: z.number().min(1, "Intervalo inválido"),
-    daily: z.preprocess(
-      (val) => (typeof val === "string" ? JSON.parse(val) : val),
-      DailySettings.optional()
-    ),
-    weekly: z.preprocess(
-      (val) => (typeof val === "string" ? JSON.parse(val) : val),
-      WeeklySettings.optional()
-    ),
-    monthly: z.preprocess(
-      (val) => (typeof val === "string" ? JSON.parse(val) : val),
-      MonthlySettings.optional()
-    ),
-    startDate: z.date().optional(),
-    endCondition: z
-      .nativeEnum(RecurrenceEnd, {
-        required_error: "Selecione quando termina a recorrência do atendimento",
-      })
-      .default("NEVER"),
-  })
-  .refine(
-    (data) => {
-      if (data.pattern === "DAILY" && !data.daily) {
-        throw new Error("Configuração diária é obrigatória");
-      }
-      return true;
-    },
-    {
-      path: ["daily"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.pattern === "WEEKLY" && !data.weekly) {
-        throw new Error("Configuração semanal é obrigatória");
-      }
-      return true;
-    },
-    {
-      path: ["weekly"],
-    }
-  )
-  .refine(
-    (data) => {
-      if (data.pattern === "MONTHLY" && !data.monthly) {
-        throw new Error("Configuração mensal é obrigatória");
-      }
-      return true;
-    },
-    {
-      path: ["monthly"],
-    }
-  )
-  .refine(
-    (data) => {
-      const activePattern = data.pattern.toLowerCase();
-      return !data.daily || activePattern === "daily";
-    },
-    {
-      message: "Configuração diária não deve ser enviada para este padrão",
-      path: ["daily"],
-    }
-  )
-  .refine(
-    (data) => {
-      const activePattern = data.pattern.toLowerCase();
-      return !data.weekly || activePattern === "weekly";
-    },
-    {
-      message: "Configuração semanal não deve ser enviada para este padrão",
-      path: ["weekly"],
-    }
-  )
-  .refine(
-    (data) => {
-      const activePattern = data.pattern.toLowerCase();
-      return !data.monthly || activePattern === "monthly";
-    },
-    {
-      message: "Configuração mensal não deve ser enviada para este padrão",
-      path: ["monthly"],
-    }
-  );
+const BiWeeklySchema = baseRecurrenceSchema.extend({
+  repeat: z.literal(RecurrencePattern.BIWEEKLY, {
+    message: "Selecione o tipo de recorrência",
+  }),
+  durationMinutes: z
+    .number()
+    .int("Duração deve ser um número inteiro")
+    .min(30, "Mínimo de 30 minutos por sessão")
+    .max(180, "Máximo de 3 horas por sessão"),
+  occurrenceCount: z.number().optional(),
+});
 
-export type RecurrenceFormValues = z.infer<typeof RecurrenceSchema>;
+const monthlySchema = baseRecurrenceSchema.extend({
+  repeat: z.literal(RecurrencePattern.MONTHLY, {
+    message: "Selecione o tipo de recorrência",
+  }),
+  dayOfMonth: z
+    .number()
+    .int("Dia do mês deve ser um número inteiro")
+    .min(1, "Dia mínimo: 1")
+    .max(31, "Dia máximo: 31"),
+  occurrenceCount: z.number().optional(),
+});
+
+export const RecurrenceSchema = z.discriminatedUnion(
+  "repeat",
+  [dailySchema, weeklySchema, BiWeeklySchema, monthlySchema],
+  {
+    message: "Selecione o tipo de recorrência",
+    invalid_type_error: "Selecione o tipo de recorrência",
+    required_error: "Selecione o tipo de recorrência",
+  }
+);
 
 export const FullSessionSchema = z.object({
   session: SessionSchema,

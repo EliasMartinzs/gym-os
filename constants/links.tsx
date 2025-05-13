@@ -31,12 +31,6 @@ const personalLinks = [
     icon: <Calendar />,
     href: "/personal/calendar",
   },
-  {
-    id: 5,
-    title: "Dietas",
-    icon: <Utensils />,
-    href: "/personal/diets",
-  },
 ];
 
 export { personalLinks };

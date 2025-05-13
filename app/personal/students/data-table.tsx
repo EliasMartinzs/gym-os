@@ -148,7 +148,11 @@ function renderTableRow(row: Row<StudentTableData>) {
   );
 }
 
-function EmptyTableRow({ columns }: { columns: any }) {
+function EmptyTableRow({
+  columns,
+}: {
+  columns: ColumnDef<StudentTableData>[];
+}) {
   return (
     <TableRow>
       <TableCell colSpan={columns.length} className="text-center">

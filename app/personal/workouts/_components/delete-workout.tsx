@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const DeleteWorkout = ({ closePanel, id }: Props) => {
-  const { mutate, isPending, isSuccess } = deleteWorkout(id);
+  const { mutate, isPending } = deleteWorkout(id);
   const [open, setOpen] = useState(false);
 
   return (

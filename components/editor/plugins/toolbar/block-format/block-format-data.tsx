@@ -1,5 +1,4 @@
 import {
-  CodeIcon,
   Heading1Icon,
   Heading2Icon,
   Heading3Icon,

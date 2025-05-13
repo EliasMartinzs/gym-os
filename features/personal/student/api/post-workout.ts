@@ -20,15 +20,17 @@ export const postWorkout = () => {
         json: json,
       });
 
+      const result = await response.json();
+
       if (!response.ok) {
         return {
           success: false,
-          message: "errrrr",
+          message: result.message,
           data: null,
         };
       }
 
-      return await response.json();
+      return result;
     },
     onSuccess: async (data) => {
       toast.success(data.message || "Template criado com sucesso", {

@@ -62,7 +62,7 @@ export const EnumTranslations = {
     IN_PROGRESS: "Em Andamento",
     COMPLETED: "Concluída",
     CANCELED: "Cancelada",
-    MISSED: "Não Compareceu",
+    NO_SHOW: "Não Compareceu",
   },
   SessionType: {
     PERSONAL_TRAINING: "Treino Personalizado",
@@ -127,6 +127,45 @@ export const EnumTranslations = {
     FULL_BODY: "Corpo Inteiro",
     CARDIO: "Cardio",
     POSTERIOR_CHAIN: "Cadeia Posterior",
+  },
+  LocationType: {
+    IN_PERSON: "Presencial",
+    ONLINE: "Online",
+    HYBRID: "Híbrido",
+    OUTDOOR: "Ao Ar Livre",
+  },
+  TrainingPhase: {
+    PREPARATION: "Preparação",
+    BASE: "Base",
+    BUILD: "Construção",
+    PEAK: "Pico",
+    RECOVERY: "Recuperação",
+    TRANSITION: "Transição",
+  },
+  PriorityLevel: {
+    LOW: "Baixa",
+    MEDIUM: "Média",
+    HIGH: "Alta",
+    CRITICAL: "Crítica",
+  },
+  MonthlyMode: {
+    DAY: "Dia",
+    WEEK: "Semana",
+  },
+  RecurrenceEnd: {
+    NEVER: "Nunca",
+    AFTER_OCCURRENCES: "Apos ocorrencias",
+    ON_DATE: "Na data",
+  },
+  ScheduleType: {
+    WEEKDAYS: "Dias úteis",
+    WEEKEND: "Final de semana",
+    ALL: "Todos",
+  },
+  RecurrenceUnit: {
+    DAYS: "Dias",
+    WEEKS: "Semanas",
+    MONTHS: "Meses",
   },
 } as const;
 

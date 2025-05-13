@@ -11,10 +11,8 @@ import { EnumTranslations } from "@/lib/enum-tranlations";
 import { formatDate } from "@/lib/utils";
 import { DayOfWeek } from "@prisma/client";
 import { motion } from "framer-motion";
-import { Trash2, X } from "lucide-react";
-import { WorkoutProps } from "./workout";
-import { Button } from "@/components/ui/button";
-import { DeleteWorkout } from "./delete-workout";
+import { X } from "lucide-react";
+import { WorkoutProps } from "./workout-card";
 
 interface Props extends WorkoutProps {
   closePanel: () => void;
@@ -33,7 +31,7 @@ export const WorkoutPanel = ({ closePanel, workout }: Props) => {
     name,
   } = workout;
   return (
-    <Card className="max-w-[90vw] xl:min-w-6xl relative max-h-[75vh] overflow-auto">
+    <Card className="min-w-[90vw] xl:min-w-6xl relative max-h-[75vh] overflow-auto">
       <CardHeader className="space-y-4">
         <CardTitle className="w-full flex flex-col lg:flex-row items-start lg:items-center gap-y-2 gap-x-8">
           <h6 className="capitalize text-xl">{name}</h6>

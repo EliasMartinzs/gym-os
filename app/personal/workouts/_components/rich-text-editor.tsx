@@ -2,43 +2,42 @@
 
 import { useEffect, useState } from "react";
 
-import { ParagraphNode, TextNode } from "lexical";
+import { ListItemNode, ListNode } from "@lexical/list";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { ListNode, ListItemNode } from "@lexical/list";
+import { ParagraphNode, TextNode } from "lexical";
 
+import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
 import {
   InitialConfigType,
   LexicalComposer,
 } from "@lexical/react/LexicalComposer";
 import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
-import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
-import { CheckListPlugin } from "@lexical/react/LexicalCheckListPlugin";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import { editorTheme } from "@/components/editor/themes/editor-theme";
 import { ContentEditable } from "@/components/editor/editor-ui/content-editable";
+import { editorTheme } from "@/components/editor/themes/editor-theme";
 
-import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
 import { BlockFormatDropDown } from "@/components/editor/plugins/toolbar/block-format-toolbar-plugin";
+import { ToolbarPlugin } from "@/components/editor/plugins/toolbar/toolbar-plugin";
 
-import { FormatParagraph } from "@/components/editor/plugins/toolbar/block-format/format-paragraph";
-import { FormatHeading } from "@/components/editor/plugins/toolbar/block-format/format-heading";
-import { FormatNumberedList } from "@/components/editor/plugins/toolbar/block-format/format-numbered-list";
 import { FormatBulletedList } from "@/components/editor/plugins/toolbar/block-format/format-bulleted-list";
 import { FormatCheckList } from "@/components/editor/plugins/toolbar/block-format/format-check-list";
+import { FormatHeading } from "@/components/editor/plugins/toolbar/block-format/format-heading";
+import { FormatNumberedList } from "@/components/editor/plugins/toolbar/block-format/format-numbered-list";
+import { FormatParagraph } from "@/components/editor/plugins/toolbar/block-format/format-paragraph";
 import { FormatQuote } from "@/components/editor/plugins/toolbar/block-format/format-quote";
 
-import { FontSizeToolbarPlugin } from "@/components/editor/plugins/toolbar/font-size-toolbar-plugin";
 import { FontFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/font-format-toolbar-plugin";
+import { FontSizeToolbarPlugin } from "@/components/editor/plugins/toolbar/font-size-toolbar-plugin";
 
-import { $getRoot } from "lexical";
-import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { $generateHtmlFromNodes } from "@lexical/html";
-import { FontColorToolbarPlugin } from "@/components/editor/plugins/toolbar/font-color-toolbar-plugin";
-import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar/font-background-toolbar-plugin";
 import { ElementFormatToolbarPlugin } from "@/components/editor/plugins/toolbar/element-format-toolbar-plugin";
+import { FontBackgroundToolbarPlugin } from "@/components/editor/plugins/toolbar/font-background-toolbar-plugin";
+import { FontColorToolbarPlugin } from "@/components/editor/plugins/toolbar/font-color-toolbar-plugin";
+import { $generateHtmlFromNodes } from "@lexical/html";
+import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 
 const editorConfig: InitialConfigType = {
   namespace: "Editor",
@@ -78,6 +77,7 @@ function RichTextEditorContent({
 export function RichTextEditor({
   onChange,
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onChange: (...event: any[]) => void;
 }) {
   return (
@@ -96,8 +96,7 @@ export function RichTextEditor({
 const placeholder = "Comece a digitar...";
 
 export function Plugins() {
-  const [floatingAnchorElem, setFloatingAnchorElem] =
-    useState<HTMLDivElement | null>(null);
+  const [, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);
 
   const onRef = (_floatingAnchorElem: HTMLDivElement) => {
     if (_floatingAnchorElem !== null) {
@@ -109,7 +108,7 @@ export function Plugins() {
     <div className="relative">
       {/* toolbar plugins */}
       <ToolbarPlugin>
-        {({ blockType }) => (
+        {() => (
           <div className="vertical-align-middle sticky top-0 z-10 flex gap-2 overflow-auto p-3 no-scrollbar">
             <BlockFormatDropDown>
               <FormatParagraph />

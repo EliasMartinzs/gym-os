@@ -17,7 +17,9 @@ export const LastStudents = () => {
       </div>
     );
   }
+
   if (isError) return <></>;
+
   if (!data?.data || data.data.length === 0) {
     return (
       <NoData

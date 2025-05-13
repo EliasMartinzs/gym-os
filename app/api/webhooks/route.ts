@@ -2,6 +2,7 @@ import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { clerkClient, WebhookEvent } from "@clerk/nextjs/server";
 import prisma from "@/lib/db";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
@@ -112,12 +113,15 @@ export async function POST(req: Request) {
         },
       });
       return new Response("Usuário deletado com sucesso", { status: 200 });
-    } catch (error: any) {
-      if (error.code === "P2025") {
-        return new Response("Usuário não encontrado (já deletado?)", {
-          status: 200,
-        });
+    } catch (error: unknown) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === "P2025") {
+          return new Response("Usuário não encontrado (já deletado?)", {
+            status: 200,
+          });
+        }
       }
+
       console.error("Erro ao deletar usuário:", error);
       return new Response("Erro ao deletar usuário", { status: 500 });
     }

@@ -10,21 +10,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getStudent } from "@/features/personal/student/api/get-student";
+import { EnumTranslations } from "@/lib/enum-tranlations";
+import { formatDate } from "@/lib/utils";
+import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import { Cake, Calendar, Loader2, Mail, Phone, Workflow } from "lucide-react";
 import Image from "next/image";
-import React, { Usable, use } from "react";
-import NoDataImg from "@/public/undraw_no-data_ig65.svg";
-import { formatDate } from "@/lib/utils";
-import { EnumTranslations, StatusColor } from "@/lib/enum-tranlations";
+import { use } from "react";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { TrainingFormat } from "@prisma/client";
 import { TemplateStudent } from "./_components/template";
-import { Status, TrainingFormat } from "@prisma/client";
 
 import Background from "@/public/background.jpg";
 
 type Props = {
-  params: Usable<{ id: string }>;
+  params: Promise<{ id: string }>;
 };
 
 export default function Student({ params }: Props) {
@@ -60,9 +59,9 @@ export default function Student({ params }: Props) {
           </CardTitle>
           <CardDescription className="space-y-4">
             <p>
-              Nenhum modelo de treino cadastrado ainda. Clique em ‘Criar Novo’
+              Nenhum modelo de treino cadastrado ainda. Clique em Criar Novo
               para começar a montar seus templates e organizar os treinos dos
-              alunos!"
+              alunos!
             </p>
 
             <p>Esta seção contém exclusivamente templates reutilizáveis.</p>
@@ -82,6 +81,8 @@ export default function Student({ params }: Props) {
     );
   }
 
+  console.log(data);
+
   return (
     <div>
       <div className="flex flex-col relative max-lg:items-center justify-center">
@@ -98,7 +99,7 @@ export default function Student({ params }: Props) {
           <div className="max-xl:absolute top-0 left-0 z-50 relative max-xl:w-full max-xl:h-80 xl:size-64">
             <Image
               src={data.avatarUrl!}
-              alt={data.name}
+              alt={data.name as string}
               loading="lazy"
               className="object-cover object-center max-xl:rounded-b-3xl xl:rounded-3xl"
               fill
@@ -119,11 +120,11 @@ export default function Student({ params }: Props) {
                 </div>
               )}
               <div className="flex gap-2">
-                <Calendar /> {formatDate(data.createdAt)}
+                <Calendar /> {formatDate(data.createdAt as string)}
               </div>
               {data?.student?.birthDate && (
                 <div className="flex gap-2">
-                  <Cake /> {formatDate(data.student.birthDate)}
+                  <Cake /> {formatDate(data.student.birthDate as string)}
                 </div>
               )}
               <div className="flex gap-2">
@@ -140,18 +141,7 @@ export default function Student({ params }: Props) {
       </div>
 
       <Main className="max-xl:mt-10 xl:-translate-y-20">
-        <Tabs defaultValue="template" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="template">Treinos</TabsTrigger>
-            <TabsTrigger value="password">Password</TabsTrigger>
-          </TabsList>
-          <TabsContent value="template">
-            <TemplateStudent
-              workoutTemplate={data?.student?.workoutTemplate!}
-            />
-          </TabsContent>
-          <TabsContent value="password">Change your password here.</TabsContent>
-        </Tabs>
+        <TemplateStudent workoutTemplate={data.workoutTemplates[0]} />
       </Main>
     </div>
   );

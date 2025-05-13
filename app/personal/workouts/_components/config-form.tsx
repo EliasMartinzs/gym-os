@@ -18,7 +18,7 @@ import { SelectOptions } from "@/lib/enum-tranlations";
 import { WorkoutTemplateSchema } from "@/lib/validations";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { MultiSelect } from "./multi-select";
+import { MultiSelect } from "../../../../components/reusable/multi-select";
 
 export const ConfigForm = ({
   form,

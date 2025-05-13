@@ -78,7 +78,7 @@ enum SessionStatus {
   CONFIRMED   @map("confirmada")
   IN_PROGRESS @map("em_andamento")
   COMPLETED   @map("concluída")
-  CANCELLED   @map("cancelada")
+  CANCELED    @map("cancelada")
   NO_SHOW     @map("não_compareceu")
 }
 
@@ -101,7 +101,6 @@ enum RecurrencePattern {
   WEEKLY   @map("semanal")
   BIWEEKLY @map("quinzenal")
   MONTHLY  @map("mensal")
-  CUSTOM   @map("personalizado")
 }
 
 enum DayOfWeek {
@@ -181,6 +180,17 @@ enum PriorityLevel {
   CRITICAL @map("critica")
 }
 
+enum MonthlyMode {
+  DAY  @map("dia")
+  WEEK @map("semana")
+}
+
+enum RecurrenceUnit {
+  DAYS   @map("Dias")
+  WEEKS  @map("Semanas")
+  MONTHS @map("Meses")
+}
+
 enum PaymentStatus {
   PENDING        @map("pendente")
   PARTIALLY_PAID @map("parcialmente_pago")
@@ -194,6 +204,21 @@ enum RecurrenceEnd {
   NEVER             @map("nunca")
   AFTER_OCCURRENCES @map("apos_ocorrencias")
   ON_DATE           @map("na_data")
+}
+
+enum SessionOccurrenceStatus {
+  SCHEDULED // Sessão agendada/normal
+  COMPLETED // Sessão realizada com sucesso
+  CANCELLED // Sessão cancelada
+  RESCHEDULED // Sessão reagendada
+  MISSED // Sessão não realizada sem cancelamento
+  PENDING // Sessão aguardando confirmação
+}
+
+enum ScheduleType {
+  WEEKDAYS @map("dias_uteis")
+  WEEKEND  @map("final_de_semana")
+  ALL      @map("todos")
 }
 
 model User {
@@ -449,51 +474,32 @@ model Exercise {
 model Session {
   id String @id @default(uuid())
 
-  // Relacionamentos essenciais
   student   Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
   studentId String
   trainer   PersonalTrainer @relation(fields: [trainerId], references: [id], onDelete: Cascade)
   trainerId String
 
-  // Período e localização
-  startAt      DateTime     @db.Timestamp(6)
-  endAt        DateTime     @db.Timestamp(6)
-  locationType LocationType @default(IN_PERSON)
+  status       SessionStatus
+  priority     PriorityLevel
+  observations String?
+  locationType LocationType
+
   street       String?
   number       String?
   neighborhood String?
   city         String?
   postalCode   String?
 
-  // Status 
-  status     SessionStatus @default(SCHEDULED)
-  phase      TrainingPhase // Periodização do treino
-  priority   PriorityLevel @default(MEDIUM)
-  ressurence Recurrence?
-
-  // Métricas de desempenho
-  rpe               Int? // Escala de Borg modificada
-  sessionRating     Int? // Qualidade geral da sessão
-  perceivedRecovery Int? // PRS - Perceived Recovery Status
-
-  // Documentação
-  observations    String? @db.Text // Observações do profissional
-  studentFeedback String? @db.Text // Feedback do aluno
-
-  // Timestamps
-  createdAt                 DateTime                 @default(now()) @db.Timestamp(6)
-  updatedAt                 DateTime                 @updatedAt @db.Timestamp(6)
-  canceledAt                DateTime?                @db.Timestamp(6)
-  completedAt               DateTime?                @db.Timestamp(6)
   workoutTemplate           WorkoutTemplate?         @relation(fields: [workoutTemplateId], references: [id], onDelete: Cascade)
   workoutTemplateId         String?
   assignedWorkoutTemplate   AssignedWorkoutTemplate? @relation(fields: [assignedWorkoutTemplateId], references: [id], onDelete: Cascade)
   assignedWorkoutTemplateId String?
+  recurrence                Recurrence?
 
-  // Índices
-  @@index([studentId, startAt])
-  @@index([trainerId, startAt])
-  @@index([status, startAt])
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  sessionOccurrence SessionOccurrence[]
+
   @@map("sessions")
 }
 
@@ -502,33 +508,40 @@ model Recurrence {
   session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   sessionId String  @unique
 
-  // Padrão base de recorrência
-  pattern  RecurrencePattern
-  interval Int               @default(1) // Intervalo entre ocorrências
+  startDate       DateTime
+  endDate         DateTime?
+  durationMinutes Int               @default(60)
+  repeat          RecurrencePattern
+  daysOfWeek      DayOfWeek[]
+  dayOfMonth      Int?
+  unit            RecurrenceUnit?
+  scheduleType    ScheduleType?
+  occurrenceCount Int?
+  excludeDates    DateTime[]
+  hours           String?
 
-  // Configuração por tipo de padrão
-  daily   Json? // { weekdays: boolean } para dias úteis/diário
-  weekly  Json? // { daysOfWeek: DayOfWeek[] }
-  monthly Json? // { dayOfMonth: Int, mode: 'day'|'week' }
-
-  // Limites da recorrência
-  startDate    DateTime      @default(now())
-  endCondition RecurrenceEnd @default(NEVER)
-  endAfter     Int? // Número de ocorrências
-  endDate      DateTime? // Data final absoluta
-
-  // Exceções e ajustes
-  excludedDates DateTime[] // Datas específicas a ignorar
-  adjustedDates Json? // { original: DateTime, adjusted: DateTime }[]
-
-  // Timezone e fuso horário
-  timezone String @default("America/Sao_Paulo")
-
-  // Metadados
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@map("recurrences")
+}
+
+model SessionOccurrence {
+  id        String  @id @default(uuid())
+  session   Session @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  sessionId String
+
+  originalDate DateTime
+  actualDate   DateTime
+  status       SessionOccurrenceStatus
+
+  isRescheduled Boolean   @default(false)
+  cancelledAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("session_occurrences")
 }
 
 model Diet {

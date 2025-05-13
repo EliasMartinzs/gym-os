@@ -53,13 +53,22 @@ CREATE TYPE "TrainingPhase" AS ENUM ('preparacao', 'base', 'construcao', 'pico',
 CREATE TYPE "PriorityLevel" AS ENUM ('baixa', 'media', 'alta', 'critica');
 
 -- CreateEnum
-CREATE TYPE "TrainingSystem" AS ENUM ('tradicional', 'bloco', 'dup', 'conjugado', 'westside', 'hit', 'fst7', 'outro');
+CREATE TYPE "MonthlyMode" AS ENUM ('dia', 'semana');
+
+-- CreateEnum
+CREATE TYPE "RecurrenceUnit" AS ENUM ('Dias', 'Semanas', 'Meses');
 
 -- CreateEnum
 CREATE TYPE "PaymentStatus" AS ENUM ('pendente', 'parcialmente_pago', 'pago', 'reembolsado', 'em_disputa', 'cancelado');
 
 -- CreateEnum
 CREATE TYPE "RecurrenceEnd" AS ENUM ('nunca', 'apos_ocorrencias', 'na_data');
+
+-- CreateEnum
+CREATE TYPE "SessionOccurrenceStatus" AS ENUM ('SCHEDULED', 'COMPLETED', 'CANCELLED', 'RESCHEDULED', 'MISSED', 'PENDING');
+
+-- CreateEnum
+CREATE TYPE "ScheduleType" AS ENUM ('dias_uteis', 'final_de_semana', 'todos');
 
 -- CreateTable
 CREATE TABLE "users" (
@@ -264,32 +273,20 @@ CREATE TABLE "sessions" (
     "id" TEXT NOT NULL,
     "studentId" TEXT NOT NULL,
     "trainerId" TEXT NOT NULL,
-    "startAt" TIMESTAMP(6) NOT NULL,
-    "endAt" TIMESTAMP(6) NOT NULL,
-    "locationType" "LocationType" NOT NULL DEFAULT 'presencial',
+    "status" "SessionStatus" NOT NULL,
+    "phase" "TrainingPhase" NOT NULL,
+    "priority" "PriorityLevel" NOT NULL,
+    "observations" TEXT,
+    "locationType" "LocationType" NOT NULL,
     "street" TEXT,
     "number" TEXT,
     "neighborhood" TEXT,
     "city" TEXT,
     "postalCode" TEXT,
-    "status" "SessionStatus" NOT NULL DEFAULT 'agendada',
-    "phase" "TrainingPhase" NOT NULL,
-    "priority" "PriorityLevel" NOT NULL DEFAULT 'media',
-    "trainingSystem" "TrainingSystem" NOT NULL,
-    "objectives" TEXT[],
-    "method" TEXT,
-    "equipmentNeeds" TEXT[],
-    "rpe" INTEGER,
-    "sessionRating" INTEGER,
-    "perceivedRecovery" INTEGER,
-    "observations" TEXT,
-    "studentFeedback" TEXT,
-    "createdAt" TIMESTAMP(6) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(6) NOT NULL,
-    "canceledAt" TIMESTAMP(6),
-    "completedAt" TIMESTAMP(6),
     "workoutTemplateId" TEXT,
     "assignedWorkoutTemplateId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "sessions_pkey" PRIMARY KEY ("id")
 );
@@ -298,22 +295,35 @@ CREATE TABLE "sessions" (
 CREATE TABLE "recurrences" (
     "id" TEXT NOT NULL,
     "sessionId" TEXT NOT NULL,
-    "pattern" "RecurrencePattern" NOT NULL,
-    "interval" INTEGER NOT NULL DEFAULT 1,
-    "daily" JSONB,
-    "weekly" JSONB,
-    "monthly" JSONB,
-    "startDate" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "endCondition" "RecurrenceEnd" NOT NULL DEFAULT 'nunca',
-    "endAfter" INTEGER,
+    "startDate" TIMESTAMP(3) NOT NULL,
     "endDate" TIMESTAMP(3),
-    "excludedDates" TIMESTAMP(3)[],
-    "adjustedDates" JSONB,
-    "timezone" TEXT NOT NULL DEFAULT 'America/Sao_Paulo',
+    "durationMinutes" INTEGER NOT NULL DEFAULT 60,
+    "repeat" "RecurrencePattern" NOT NULL,
+    "daysOfWeek" "DayOfWeek"[],
+    "dayOfMonth" INTEGER,
+    "unit" "RecurrenceUnit",
+    "scheduleType" "ScheduleType" NOT NULL,
+    "occurrenceCount" INTEGER,
+    "excludeDates" TIMESTAMP(3)[],
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "recurrences_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "session_occurrences" (
+    "id" TEXT NOT NULL,
+    "sessionId" TEXT NOT NULL,
+    "originalDate" TIMESTAMP(3) NOT NULL,
+    "actualDate" TIMESTAMP(3) NOT NULL,
+    "status" "SessionOccurrenceStatus" NOT NULL,
+    "isRescheduled" BOOLEAN NOT NULL DEFAULT false,
+    "cancelledAt" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "session_occurrences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -374,15 +384,6 @@ CREATE INDEX "assigned_workout_templates_studentId_isActive_idx" ON "assigned_wo
 
 -- CreateIndex
 CREATE UNIQUE INDEX "exercises_name_personalTrainerId_key" ON "exercises"("name", "personalTrainerId");
-
--- CreateIndex
-CREATE INDEX "sessions_studentId_startAt_idx" ON "sessions"("studentId", "startAt");
-
--- CreateIndex
-CREATE INDEX "sessions_trainerId_startAt_idx" ON "sessions"("trainerId", "startAt");
-
--- CreateIndex
-CREATE INDEX "sessions_status_startAt_idx" ON "sessions"("status", "startAt");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "recurrences_sessionId_key" ON "recurrences"("sessionId");
@@ -461,6 +462,9 @@ ALTER TABLE "sessions" ADD CONSTRAINT "sessions_assignedWorkoutTemplateId_fkey" 
 
 -- AddForeignKey
 ALTER TABLE "recurrences" ADD CONSTRAINT "recurrences_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "session_occurrences" ADD CONSTRAINT "session_occurrences_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "sessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "diets" ADD CONSTRAINT "diets_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

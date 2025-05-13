@@ -16,8 +16,8 @@ type FullResponse = InferResponseType<
 >;
 
 type WorkoutTemplateFromResponse = NonNullable<
-  NonNullable<FullResponse["data"]>["student"]
->["workoutTemplate"];
+  NonNullable<FullResponse["data"]>["workoutTemplates"]
+>[number];
 
 type Props = {
   workoutTemplate: WorkoutTemplateFromResponse;
@@ -26,12 +26,13 @@ type Props = {
 export const TemplateStudent = ({ workoutTemplate }: Props) => {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
-  if (!workoutTemplate[0]) {
+
+  if (!workoutTemplate) {
     return <>Nenhum treino até o momento</>;
   }
 
   const { name, description, days, defaultGoal, defaultLevel, defaultTags } =
-    workoutTemplate[0];
+    workoutTemplate;
   console.log(workoutTemplate);
 
   return (

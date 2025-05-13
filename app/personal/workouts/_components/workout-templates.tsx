@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/card";
 import { getWorkouts } from "@/features/personal/student/api/get-workouts";
 import { Loader2 } from "lucide-react";
-import { Workout } from "./workout";
+import { WorkoutCard } from "./workout-card";
 import Image from "next/image";
 import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import { WorkoutFilters } from "./workout-filters";
@@ -81,9 +81,9 @@ export const WorkoutTemplates = () => {
           </CardTitle>
           <CardDescription className="space-y-4">
             <p>
-              Nenhum modelo de treino cadastrado ainda. Clique em ‘Criar Novo’
+              Nenhum modelo de treino cadastrado ainda. Clique em Criar Novo
               para começar a montar seus templates e organizar os treinos dos
-              alunos!"
+              alunos!
             </p>
 
             <p>Esta seção contém exclusivamente templates reutilizáveis.</p>
@@ -113,7 +113,7 @@ export const WorkoutTemplates = () => {
       {/* Card Templates */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-5">
         {data?.data?.map((workout) => (
-          <Workout workout={workout} key={workout.id} />
+          <WorkoutCard workout={workout} key={workout.id} />
         ))}
       </div>
     </div>

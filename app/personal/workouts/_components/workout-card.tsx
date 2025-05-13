@@ -12,6 +12,7 @@ import { EnumTranslations } from "../../../../lib/enum-tranlations";
 import { usePanelSlice } from "@/features/personal/student/hooks/use-expandable-panel";
 import { WorkoutPanel } from "./workout-panel";
 import { DeleteWorkout } from "./delete-workout";
+import { RecycleWorkout } from "./recycle-workout";
 
 type ApiResponse = InferResponseType<typeof client.api.personal.workouts.$get>;
 
@@ -21,7 +22,7 @@ export type WorkoutProps = {
   workout: SingleWorkout;
 };
 
-export const Workout = ({ workout }: WorkoutProps) => {
+export const WorkoutCard = ({ workout }: WorkoutProps) => {
   const { openPanel, closePanel } = usePanelSlice();
 
   const { name, defaultGoal, defaultLevel, defaultTags, description, id } =
@@ -90,11 +91,15 @@ export const Workout = ({ workout }: WorkoutProps) => {
           )}
         </div>
       </CardContent>
+
       <div
         className="absolute top-5 right-5"
         onClick={(e) => e.stopPropagation()}
       >
-        <DeleteWorkout closePanel={closePanel} id={id} />
+        <div className="flex items-center gap-x-3">
+          <RecycleWorkout workout={workout} />
+          <DeleteWorkout closePanel={closePanel} id={id} />
+        </div>
       </div>
     </Card>
   );

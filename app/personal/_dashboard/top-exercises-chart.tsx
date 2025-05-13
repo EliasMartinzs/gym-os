@@ -27,7 +27,7 @@ const CustomChartTootlip = ({
 }: TooltipProps<number, string>) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-md bg-background text-black p-4 shadow-md border">
+      <div className="rounded-md bg-background text-foreground p-4 shadow-md border">
         <p className="font-medium">{payload[0].name}</p>
         <p className="text-sm">{payload[0].value} vezes</p>
       </div>

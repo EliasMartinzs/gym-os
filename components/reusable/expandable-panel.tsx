@@ -3,7 +3,6 @@
 import { usePanelSlice } from "@/features/personal/student/hooks/use-expandable-panel";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
-import { Icon } from "./icon";
 
 export const ExpandablePanel = () => {
   const { open, component, closePanel } = usePanelSlice();

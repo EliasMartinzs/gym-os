@@ -20,7 +20,7 @@ export const MenuLinks = ({ links, setOpen }: Props) => {
 
   return (
     <>
-      {links.map(({ href, icon, id, title }) => (
+      {links.map(({ href, icon, id }) => (
         <Link
           key={id}
           href={href}

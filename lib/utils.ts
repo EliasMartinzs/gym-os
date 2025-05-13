@@ -132,3 +132,34 @@ export function formatFullDate(date: string | Date | number) {
 
   return `${weekDayFormated}, ${day}/${month}/${year}`;
 }
+
+// Funções auxiliares para manipulação de datas
+export function addDays(date: Date, days: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+export function addMonths(date: Date, months: number) {
+  const result = new Date(date);
+  result.setMonth(result.getMonth() + months);
+  return result;
+}
+
+export function getNextWeekday(date: Date, dayIndex: number) {
+  const result = new Date(date);
+  result.setDate(result.getDate() + ((dayIndex - result.getDay() + 7) % 7));
+  return result;
+}
+
+export function setDayOfMonth(date: Date, day: number) {
+  const result = new Date(date);
+  result.setDate(day);
+
+  // Se o dia for maior que o último dia do mês, ajusta para o último dia
+  if (result.getDate() !== day) {
+    result.setDate(0); // Vai para o último dia do mês anterior
+  }
+
+  return result;
+}

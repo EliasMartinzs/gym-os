@@ -15,7 +15,7 @@ export const Tooltip = ({ text, trigger }: Props) => {
     <TooltipProvider delayDuration={0}>
       <TooltipMain>
         <TooltipTrigger>{trigger}</TooltipTrigger>
-        <TooltipContent>{text}</TooltipContent>
+        <TooltipContent className="p-6">{text}</TooltipContent>
       </TooltipMain>
     </TooltipProvider>
   );

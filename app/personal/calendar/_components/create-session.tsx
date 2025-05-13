@@ -10,6 +10,7 @@ export const CreateSession = () => {
   const [open, setOpen] = useState(false);
   return (
     <ResponsiveModal
+      title="Novo atendimento"
       open={open}
       setOpen={setOpen}
       trigger={

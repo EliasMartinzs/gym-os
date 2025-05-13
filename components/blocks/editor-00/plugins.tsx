@@ -1,9 +1,10 @@
-import { useState } from 'react';
-import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
-import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
-import { ContentEditable } from '@/components/editor/editor-ui/content-editable';
+import { ContentEditable } from "@/components/editor/editor-ui/content-editable";
+import { LexicalErrorBoundary } from "@lexical/react/LexicalErrorBoundary";
+import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { useState } from "react";
 
 export function Plugins() {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
 
@@ -21,7 +22,7 @@ export function Plugins() {
           contentEditable={
             <div className="">
               <div className="" ref={onRef}>
-                <ContentEditable placeholder={'Start typing ...'} />
+                <ContentEditable placeholder={"Start typing ..."} />
               </div>
             </div>
           }
