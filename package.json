@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
-    "studio": "bunx prisma studio",
-    "postbuild": "node vercel-postbuild.js"
+    "studio": "bunx prisma studio"
   },
   "dependencies": {
     "@clerk/backend": "^1.29.0",
