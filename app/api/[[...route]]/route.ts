@@ -9,7 +9,9 @@ export const config: PageConfig = {
   runtime: "edge",
 };
 
-const app = new Hono().basePath(process.env.NEXT_PUBLIC_API_URL ? "" : "/api");
+const app = new Hono().basePath(
+  process.env.NODE_ENV === "production" ? "" : "/api"
+);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _route = app.route("/personal", personal);
