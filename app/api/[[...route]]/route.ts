@@ -3,11 +3,7 @@ import { handle } from "hono/vercel";
 
 import personal from "./personal";
 
-import type { PageConfig } from "next";
-
-export const config: PageConfig = {
-  runtime: "edge",
-};
+export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
