@@ -3,7 +3,9 @@ import { handle } from "hono/vercel";
 
 import personal from "./personal";
 
-export const runtime = "edge";
+// export const runtime = "edge";
+export const runtime =
+  process.env.NODE_ENV === "production" ? "edge" : "nodejs";
 
 const app = new Hono().basePath("/api");
 
