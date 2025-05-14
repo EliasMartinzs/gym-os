@@ -12,7 +12,6 @@ const nextConfig = {
       },
     ],
   },
-
   output: "standalone", // Ou "export" se for estático
 };
 
