@@ -9,7 +9,7 @@ export const config: PageConfig = {
   runtime: "edge",
 };
 
-const app = new Hono().basePath("/api");
+const app = new Hono();
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const _route = app.route("/personal", personal);
