@@ -2,7 +2,7 @@
 
 export const getPersonalTrainerById = async (userId: string) => {
   try {
-    const personalTrainerId = await prisma.personalTrainer.findUnique({
+    const personalTrainerId = await prisma.personalTrainer.findFirst({
       where: {
         userId: userId,
       },

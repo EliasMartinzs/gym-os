@@ -1061,11 +1061,7 @@ const app = new Hono()
       try {
         const client = await clerkClient();
 
-        const personalTrainer = await prisma.personalTrainer.findFirst({
-          where: {
-            userId: auth.userId,
-          },
-        });
+        const personalTrainer = await getPersonalTrainerById(auth.userId);
 
         if (!personalTrainer) {
           throw new Error("Personal nao encontrado");
