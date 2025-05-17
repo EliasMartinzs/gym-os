@@ -54,7 +54,7 @@ export async function POST(req: Request) {
   const { id } = evt.data;
   const eventType = evt.type;
 
-  if (eventType === "user.created") {
+  if (eventType === "user.created" && !evt.data.public_metadata.byPersonal) {
     try {
       const existingUser = await prisma.user.findUnique({
         where: {

@@ -1112,6 +1112,12 @@ const app = new Hono()
           }),
         ]);
 
+        await client.users.updateUserMetadata(newStudent[0].id, {
+          publicMetadata: {
+            byPersonal: true,
+          },
+        });
+
         return c.json({
           success: true,
           message: "Estudante criado com sucesso",
