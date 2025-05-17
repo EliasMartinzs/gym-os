@@ -1068,6 +1068,9 @@ const app = new Hono()
             lastName: "",
             emailAddress: [validated.email],
             password: validated.password,
+            publicMetadata: {
+              byPersonal: true,
+            },
           }),
         ]);
 
@@ -1111,12 +1114,6 @@ const app = new Hono()
             },
           }),
         ]);
-
-        await client.users.updateUserMetadata(newStudent[0].id, {
-          publicMetadata: {
-            byPersonal: true,
-          },
-        });
 
         return c.json({
           success: true,
