@@ -1,4 +1,3 @@
-import { getPersonalTrainerById } from "@/actions/personal";
 import prisma from "@/lib/db";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { calculateDuration } from "@/lib/utils";
