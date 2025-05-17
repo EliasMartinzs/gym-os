@@ -1062,16 +1062,6 @@ const app = new Hono()
         const client = await clerkClient();
 
         const personalTrainer = await getPersonalTrainerById(auth.userId);
-        console.log(personalTrainer, "personal trainer");
-        console.log(auth, "usuario logado");
-
-        if (!personalTrainer) {
-          return c.json({
-            success: false,
-            message: "Personal trainer nao encontrado new student",
-            data: null,
-          });
-        }
 
         const [clerkUser] = await Promise.all([
           client.users.createUser({
@@ -1098,7 +1088,7 @@ const app = new Hono()
           }),
           prisma.student.create({
             data: {
-              personalTrainerId: personalTrainer.id,
+              personalTrainerId: personalTrainer?.id as string,
               userId: clerkUser.id,
               status: validated.status || "ACTIVE",
               trainingFormat: validated.trainingFormat,
