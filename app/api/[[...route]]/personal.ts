@@ -1062,6 +1062,8 @@ const app = new Hono()
         const client = await clerkClient();
 
         const personalTrainer = await getPersonalTrainerById(auth.userId);
+        console.log(personalTrainer, "personal trainer");
+        console.log(auth, "usuario logado");
 
         if (!personalTrainer) {
           return c.json({
