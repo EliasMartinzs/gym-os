@@ -35,7 +35,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const genderCount = await prisma.student.groupBy({
         by: ["gender"],
@@ -180,7 +187,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainerId = await getPersonalTrainerById(auth.userId);
+      const personalTrainerId = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const statusCounts = await prisma.student.groupBy({
         by: ["status"],
@@ -249,7 +263,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const students = await prisma.student.findMany({
         where: {
@@ -321,7 +342,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const data = await prisma.student.findMany({
         where: {
@@ -390,7 +418,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const topExercises = await prisma.exerciseInWorkout.groupBy({
         by: ["exerciseId"],
@@ -495,7 +530,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const formatsCount = await prisma.student.groupBy({
         by: ["trainingFormat"],
@@ -572,7 +614,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const workouts = await prisma.workoutTemplate.findMany({
         where: {
@@ -658,7 +707,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       if (!personalTrainer?.id) {
         return c.json({
@@ -756,7 +812,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       if (!personalTrainer?.id) {
         return c.json({
@@ -954,7 +1017,14 @@ const app = new Hono()
     }
 
     try {
-      const personalTrainer = await getPersonalTrainerById(auth.userId);
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
 
       const students = await prisma.student.findMany({
         where: {
@@ -1061,7 +1131,14 @@ const app = new Hono()
       try {
         const client = await clerkClient();
 
-        const personalTrainer = await getPersonalTrainerById(auth.userId);
+        const personalTrainer = await prisma.personalTrainer.findFirst({
+          where: {
+            userId: auth.userId,
+          },
+          select: {
+            id: true,
+          },
+        });
 
         if (!personalTrainer) {
           throw new Error("Personal nao encontrado");
@@ -1164,7 +1241,14 @@ const app = new Hono()
       }
 
       try {
-        const personalTrainer = await getPersonalTrainerById(auth.userId);
+        const personalTrainer = await prisma.personalTrainer.findFirst({
+          where: {
+            userId: auth.userId,
+          },
+          select: {
+            id: true,
+          },
+        });
         if (!personalTrainer) {
           throw new Error("Personal trainer não encontrado");
         }
@@ -1305,7 +1389,14 @@ const app = new Hono()
       }
 
       try {
-        const personalTrainer = await getPersonalTrainerById(auth.userId);
+        const personalTrainer = await prisma.personalTrainer.findFirst({
+          where: {
+            userId: auth.userId,
+          },
+          select: {
+            id: true,
+          },
+        });
 
         if (!personalTrainer) {
           throw new Error("Personal trainer não encontrado");
@@ -1399,7 +1490,14 @@ const app = new Hono()
       }
 
       try {
-        const personalTrainer = await getPersonalTrainerById(auth.userId);
+        const personalTrainer = await prisma.personalTrainer.findFirst({
+          where: {
+            userId: auth.userId,
+          },
+          select: {
+            id: true,
+          },
+        });
 
         if (!personalTrainer) {
           return c.json({
