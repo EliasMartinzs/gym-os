@@ -39,7 +39,7 @@ const SidebarDesktop = () => {
 
 const TopbarDesktop = () => {
   return (
-    <header className="hidden lg:flex items-center w-full justify-between h-32 fixed top-0 left-0 px-28 z-50">
+    <header className="hidden lg:flex items-center w-full justify-between h-32 fixed top-0 left-0 px-28 z-50 bg-background">
       <div className="flex items-center space-x-4">
         <h2 className="">
           <UseGreetings className="text-2xl font-medium italic" />

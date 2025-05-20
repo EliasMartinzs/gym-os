@@ -6,13 +6,14 @@ import { Sessions } from "./_components/sessions";
 
 export default function Calendar() {
   return (
-    <Main className="space-y-8">
+    <Main className="space-y-4">
       <div className="space-y-4">
-        <div className="w-full flex items-center justify-between gap-x-6">
+        <div className="w-full flex items-center justify-between gap-x-2">
           <div className="flex gap-x-5 items-center">
-            <h2 className="text-xl lg:text-3xl font-medium italic">
+            <h2 className="text-lg lg:text-3xl font-medium italic">
               Minhas seções
             </h2>
+
             <Tooltip
               text={
                 <div className="flex flex-col mx-auto max-w-sm gap-y-2 text-start">
@@ -48,7 +49,7 @@ export default function Calendar() {
                   </p>
                 </div>
               }
-              trigger={<HelpCircle className="size-5" />}
+              trigger={<HelpCircle className="size-5 text-muted-foreground" />}
             />
           </div>
 

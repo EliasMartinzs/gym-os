@@ -26,7 +26,7 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
-import { NewStudent } from "./_components/new-student";
+import { CreateStudent } from "./_components/create-student";
 import { columns, StudentTableData } from "./column";
 import { ErrorState, LoadingState } from "./data-table-states";
 import { useTableData } from "./use-data-table";
@@ -64,7 +64,7 @@ export function DataTable() {
           </p>
         </div>
 
-        <NewStudent />
+        <CreateStudent />
 
         <Image
           src={AddUserImg}

@@ -1,6 +1,6 @@
 import { Main } from "@/components/reusable/main";
 
-import { NewTemplateWorkout } from "./_components/new-template-workout";
+import { CreateWorkout } from "./_components/create-workout";
 import { WorkoutTemplates } from "./_components/workout-templates";
 import { Tooltip } from "@/components/reusable/tootip";
 import { HelpCircle } from "lucide-react";
@@ -9,9 +9,9 @@ export default function Workouts() {
   return (
     <Main className="space-y-8">
       <div className="space-y-4">
-        <div className="w-full flex items-center justify-between gap-x-6">
+        <div className="w-full flex items-center justify-between gap-x-2">
           <div className="flex gap-x-5 items-center">
-            <h2 className="text-xl lg:text-3xl font-medium italic">
+            <h2 className="text-lg lg:text-3xl font-medium italic">
               Meus templates
             </h2>
             <Tooltip
@@ -28,11 +28,11 @@ export default function Workouts() {
                   </p>
                 </div>
               }
-              trigger={<HelpCircle className="size-5" />}
+              trigger={<HelpCircle className="size-5 text-muted-foreground" />}
             />
           </div>
 
-          <NewTemplateWorkout />
+          <CreateWorkout />
         </div>
       </div>
 

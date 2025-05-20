@@ -17,7 +17,7 @@ export const SessionsFilters = () => {
   return (
     <div className="space-y-4 mb-4">
       <h6 className="text-xl font-medium">Filtros</h6>
-      <div className="flex items-center gap-x-4">
+      <div className="flex items-center gap-x-4 max-md:grid max-md:grid-cols-2">
         <FilterNavigation
           title={
             EnumTranslations.RecurrencePattern[
@@ -49,11 +49,7 @@ export const SessionsFilters = () => {
           updateQueryParams={updateQueryParams}
         />
 
-        <Button
-          variant="ghost"
-          className="cursor-pointer"
-          onClick={() => clearFilter()}
-        >
+        <Button variant="ghost" onClick={() => clearFilter()}>
           Limpar filtros
         </Button>
       </div>

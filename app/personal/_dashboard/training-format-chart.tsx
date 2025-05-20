@@ -58,7 +58,10 @@ export function TrainingFormatChart() {
     );
   }
   if (isError) return <></>;
-  if (!data?.data) {
+
+  const haveStudent = data?.data?.some((student) => student.count > 0);
+
+  if (!haveStudent || !data?.data) {
     return (
       <NoData
         title="Tudo configurado e pronto para mapear sua distribuição"

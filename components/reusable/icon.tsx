@@ -4,7 +4,7 @@ interface Props {
 
 export const Icon = ({ children }: Props) => {
   return (
-    <div className="size-16 bg-card/50 rounded-full grid place-items-center transition-colors hover:bg-background/50 cursor-pointer">
+    <div className="size-16 bg-primary text-primary-foreground rounded-full grid place-items-center transition-colors hover:bg-primary/80 cursor-pointer">
       {children}
     </div>
   );

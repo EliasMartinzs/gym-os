@@ -1,8 +1,8 @@
 import { WorkoutTemplateSchema } from "@/lib/validations";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { ConfigForm } from "./config-form";
-import { Step4Form } from "./step-4-form";
+import { ConfigWorkout } from "./config-workout";
+import { Step4Workout } from "./step-4-workout";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -10,18 +10,20 @@ type Props = {
   removeTag: (tag: string) => void;
 };
 
-export const Step3Form = ({ form, handleKeyDown, removeTag }: Props) => {
+export const Step3Workout = ({ form, handleKeyDown, removeTag }: Props) => {
+  const isReusable = form.watch("isReusable");
+
   return (
-    <>
-      {!form.watch("isReusable") ? (
-        <ConfigForm
+    <div>
+      {!isReusable ? (
+        <ConfigWorkout
           form={form}
           handleKeyDown={handleKeyDown}
           removeTag={removeTag}
         />
       ) : (
-        <Step4Form form={form} />
+        <Step4Workout form={form} />
       )}
-    </>
+    </div>
   );
 };

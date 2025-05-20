@@ -45,12 +45,7 @@ export const ResponsiveModal = ({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
-        <DialogContent
-          className={cn(
-            "w-auto xl:min-w-2xl xl:max-w-7xl max-h-3/4 max-lg:px-4 overflow-y-auto",
-            className
-          )}
-        >
+        <DialogContent className={cn("overflow-y-auto", className)}>
           <DialogHeader className={cn(!title && "hidden")}>
             <DialogTitle className="text-center">{title}</DialogTitle>
             <DialogDescription className="text-center">
@@ -69,7 +64,7 @@ export const ResponsiveModal = ({
       <DrawerContent
         className={cn("w-auto max-h-3/4 max-lg:px-4 pt-8 pb-5", className)}
       >
-        <DrawerHeader className={cn(!title && "hidden")}>
+        <DrawerHeader>
           <DrawerTitle className="text-center">{title}</DrawerTitle>
           <DrawerDescription className="text-center">
             {description}

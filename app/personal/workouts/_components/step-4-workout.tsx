@@ -11,7 +11,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -35,7 +34,6 @@ import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import { MuscleGroup } from "@prisma/client";
 import { Check, ChevronsUpDown, PlusCircle, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useFieldArray, UseFormReturn } from "react-hook-form";
 import { ExerciseListForm } from "./exercise-list-form";
 
@@ -43,7 +41,7 @@ interface Props {
   form: UseFormReturn<WorkoutTemplateFormValues>;
 }
 
-export const Step4Form = ({ form }: Props) => {
+export const Step4Workout = ({ form }: Props) => {
   const { control, watch } = form;
   const {
     fields: days,
@@ -64,9 +62,9 @@ export const Step4Form = ({ form }: Props) => {
       exercises: [
         {
           exerciseId: "",
-          reps: "12",
-          rest: 30,
-          sets: 3,
+          reps: "",
+          rest: "",
+          sets: "",
           difficulty: "BEGINNER",
           equipment: "",
           instructions: "",
@@ -76,12 +74,7 @@ export const Step4Form = ({ form }: Props) => {
         },
       ],
     });
-    await form.trigger("days");
   };
-
-  useEffect(() => {
-    form.trigger("days");
-  }, [watchDays, form]);
 
   const removeDay = (index: number) => {
     remove(index);
@@ -134,7 +127,6 @@ export const Step4Form = ({ form }: Props) => {
                   name={`days.${dayIndex}.name`}
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome do Dia</FormLabel>
                       <FormControl>
                         <Input placeholder="Ex: Peito e Tríceps" {...field} />
                       </FormControl>
@@ -150,7 +142,6 @@ export const Step4Form = ({ form }: Props) => {
                     name={`days.${dayIndex}.dayOfWeek`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Dia da Semana</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -182,8 +173,6 @@ export const Step4Form = ({ form }: Props) => {
                     name={`days.${dayIndex}.focusMuscle`}
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Grupos Musculares</FormLabel>
-
                         <Popover modal>
                           <PopoverTrigger asChild>
                             <FormControl>
@@ -252,17 +241,16 @@ export const Step4Form = ({ form }: Props) => {
                         <FormMessage />
 
                         {/* Mostra os grupos selecionados como tags */}
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-1 my-2">
                           {field.value?.map((muscleValue) => {
                             const muscle = SelectOptions.MuscleGroup.find(
                               (m) => m.value === muscleValue
                             );
                             return (
-                              <div
-                                key={muscleValue}
-                                className="p-1 px-2 bg-card rounded-full"
-                              >
-                                <small>{muscle?.label}</small>
+                              <div key={muscleValue}>
+                                <small className="py-1 px-2 border rounded-2xl">
+                                  {muscle?.label}
+                                </small>
                                 <button
                                   type="button"
                                   onClick={() => {

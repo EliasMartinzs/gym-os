@@ -18,9 +18,9 @@ export function formatDate(date: Date | string | number): string {
     throw new Error("Invalid date");
   }
 
-  const day = parsedDate.getDate().toString().padStart(2, "0");
-  const month = (parsedDate.getMonth() + 1).toString().padStart(2, "0"); // Months are 0-based
-  const year = parsedDate.getFullYear();
+  const day = parsedDate.getUTCDate().toString().padStart(2, "0");
+  const month = (parsedDate.getUTCMonth() + 1).toString().padStart(2, "0");
+  const year = parsedDate.getUTCFullYear();
 
   return `${day}/${month}/${year}`;
 }

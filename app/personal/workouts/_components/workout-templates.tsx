@@ -8,14 +8,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { getWorkouts } from "@/features/personal/student/api/get-workouts";
-import { Loader2 } from "lucide-react";
-import { WorkoutCard } from "./workout-card";
-import Image from "next/image";
-import NoDataImg from "@/public/undraw_no-data_ig65.svg";
-import { WorkoutFilters } from "./workout-filters";
-import { useSearchParams } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
+import { getWorkouts } from "@/features/personal/student/api/get-workouts";
+import NoDataImg from "@/public/undraw_no-data_ig65.svg";
+import { Loader2 } from "lucide-react";
+import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { WorkoutCard } from "./workout-card";
+import { WorkoutFilters } from "./workout-filters";
 
 export const WorkoutTemplates = () => {
   const searchParams = useSearchParams();
@@ -57,11 +57,11 @@ export const WorkoutTemplates = () => {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="relative size-96 mx-auto mt-10">
+          <CardContent className="relative max-md:size-72 size-96 mx-auto mt-10">
             <Image
               src={NoDataImg}
               fill
-              className="object-contain size-96"
+              className="object-contain max-md:size-72 size-96"
               alt="no-data"
               loading="lazy"
             />
@@ -73,8 +73,8 @@ export const WorkoutTemplates = () => {
 
   if (!data?.data || data?.data?.length === 0) {
     return (
-      <Card>
-        <CardHeader className="space-y-4 text-center">
+      <div>
+        <div className="space-y-4 text-center">
           <CardTitle>
             Um espaço para criar e gerenciar planos de treino personalizados
             para seus clientes.
@@ -88,18 +88,18 @@ export const WorkoutTemplates = () => {
 
             <p>Esta seção contém exclusivamente templates reutilizáveis.</p>
           </CardDescription>
-        </CardHeader>
+        </div>
 
-        <CardContent className="relative size-96 mx-auto mt-10">
+        <div className="relative max-md:size-64 size-96 mx-auto mt-10">
           <Image
             src={NoDataImg}
             fill
-            className="object-contain size-96"
+            className="object-contain max-md:size-64 size-96"
             alt="no-data"
             loading="lazy"
           />
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     );
   }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import React from "react";
 
 import { Form } from "@/components/ui/form";
@@ -16,10 +16,10 @@ import {
 } from "@/lib/validations";
 
 import { postWorkout } from "@/features/personal/student/api/post-workout";
-import { Step1Form } from "./step-1-form";
-import { Step2Form } from "./step-2-form";
-import { Step3Form } from "./step-3-form";
-import { Step4Form } from "./step-4-form";
+import { Step1Workout } from "./step-1-workout";
+import { Step2Workout } from "./step-2-workout";
+import { Step3Workout } from "./step-3-workout";
+import { Step4Workout } from "./step-4-workout";
 
 type Props = {
   setOpen: (prevState: boolean) => void;
@@ -40,20 +40,6 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
           name: "",
           dayOfWeek: "MONDAY",
           focusMuscle: [],
-          exercises: [
-            {
-              exerciseId: "",
-              reps: undefined,
-              rest: undefined,
-              sets: 0,
-              difficulty: "",
-              equipment: "",
-              instructions: "",
-              muscle: "",
-              name: "",
-              type: "",
-            },
-          ],
         },
       ],
       config: {
@@ -74,7 +60,6 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
   const { trigger } = form;
 
   const isReusable = form.watch("isReusable");
-  console.log(isReusable);
 
   const validateCurrentStep = async () => {
     if (step === 1) {
@@ -84,10 +69,12 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
     if (!isReusable) {
       if (step === 2) return await trigger(["assigned.studentId"]);
       if (step === 3) return await trigger(["config.goals", "config.level"]);
-      if (step === 4) return await trigger(["days"]);
+      if (step === 4)
+        return form.formState.isDirty ? await trigger("days") : true;
     } else {
       if (step === 2) return await trigger(["config.goals", "config.level"]);
-      if (step === 3) return await trigger(["days"]);
+      if (step === 3)
+        return form.formState.isDirty ? await trigger("days") : true;
     }
 
     return true;
@@ -150,10 +137,10 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-6 flex-1 flex flex-col justify-center h-full"
         >
-          {step === 1 && <Step1Form form={form} />}
+          {step === 1 && <Step1Workout form={form} />}
 
           {step === 2 && (
-            <Step2Form
+            <Step2Workout
               form={form}
               handleKeyDown={handleKeyDown}
               removeTag={removeTag}
@@ -161,14 +148,16 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
           )}
 
           {step === 3 && (
-            <Step3Form
+            <Step3Workout
               form={form}
               handleKeyDown={handleKeyDown}
               removeTag={removeTag}
             />
           )}
 
-          {step === 4 && !form.watch("isReusable") && <Step4Form form={form} />}
+          {step === 4 && !form.watch("isReusable") && (
+            <Step4Workout form={form} />
+          )}
 
           <div className="flex gap-5">
             <Button
@@ -178,7 +167,7 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
               variant="outline"
               className="flex-1"
             >
-              <ChevronLeft /> Voltar
+              <ChevronLeft />
             </Button>
 
             <Button
@@ -188,10 +177,15 @@ export function WorkoutTemplateForm({ setOpen }: Props) {
               onClick={onNext}
             >
               {isLastStep ? (
-                "Criar Template"
+                <>
+                  Criar Template
+                  {mutation.isPending && (
+                    <Loader2 className="animate-spin size-5" />
+                  )}
+                </>
               ) : (
                 <>
-                  Próximo <ChevronRight className="" />
+                  <ChevronRight className="" />
                 </>
               )}
             </Button>

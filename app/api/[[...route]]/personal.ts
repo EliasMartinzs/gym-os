@@ -363,6 +363,8 @@ const app = new Hono()
               name: true,
               avatarUrl: true,
               phone: true,
+              email: true,
+              createdAt: true,
             },
           },
         },
@@ -404,6 +406,111 @@ const app = new Hono()
         message: "Houve um erro",
         data: null,
       });
+    }
+  })
+  .get("objectives", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      if (!personalTrainer) {
+        return c.json({
+          success: false,
+          message: "Personal trainer não encontrado",
+          data: null,
+        });
+      }
+
+      const goalsCount = await prisma.assignedWorkoutTemplate.groupBy({
+        by: ["customGoal"],
+        where: {
+          trainerId: personalTrainer.id,
+        },
+        _count: { customGoal: true },
+      });
+
+      const goalsSummary = goalsCount.reduce((acc, item) => {
+        const goals = Array.isArray(item.customGoal)
+          ? item.customGoal
+          : [item.customGoal];
+
+        goals.forEach((goal) => {
+          acc[goal] = (acc[goal] || 0) + item._count.customGoal;
+        });
+
+        return acc;
+      }, {} as Record<string, number>);
+
+      const data = Object.entries(goalsSummary).map(([name, value]) => ({
+        name,
+        value,
+        fill: `var(--chart-6)`,
+      }));
+
+      return c.json({
+        success: true,
+        message: null,
+        data: data,
+      });
+    } catch (error: unknown) {
+      console.error(error);
+
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        return c.json(
+          {
+            success: false,
+            message: "Erro no banco de dados",
+            data: null,
+          },
+          500
+        );
+      }
+
+      if (error instanceof HTTPException) {
+        return c.json(
+          {
+            success: false,
+            message: error.message,
+            data: null,
+          },
+          500
+        );
+      }
+
+      if (error instanceof Error) {
+        return c.json(
+          {
+            success: false,
+            message: error.message,
+            data: null,
+          },
+          500
+        );
+      }
+
+      return c.json(
+        {
+          success: false,
+          message: "Erro desconhecido",
+          data: null,
+        },
+        500
+      );
     }
   })
   .get("top-exercises", clerkMiddleware(), async (c) => {
@@ -799,6 +906,99 @@ const app = new Hono()
       );
     }
   })
+  .get("students-session", clerkMiddleware(), async (c) => {
+    const auth = getAuth(c);
+
+    if (!auth?.userId) {
+      return c.json(
+        { success: false, message: "Usuário não autenticado", data: null },
+        401
+      );
+    }
+
+    try {
+      const personalTrainer = await prisma.personalTrainer.findFirst({
+        where: {
+          userId: auth.userId,
+        },
+        select: {
+          id: true,
+        },
+      });
+
+      const students = await prisma.student.findMany({
+        where: {
+          personalTrainerId: personalTrainer?.id,
+          workoutTemplate: {
+            some: {},
+          },
+          AssignedWorkoutTemplate: {
+            some: {},
+          },
+          session: {
+            none: {},
+          },
+        },
+        select: {
+          id: true,
+          user: {
+            select: {
+              name: true,
+            },
+          },
+          workoutTemplate: {
+            select: {
+              id: true,
+            },
+          },
+          AssignedWorkoutTemplate: {
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      return c.json({
+        success: true,
+        message: null,
+        data: students,
+      });
+    } catch (error: unknown) {
+      console.error(error);
+
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        return c.json(
+          {
+            success: false,
+            message: "Erro no banco de dados",
+            data: null,
+          },
+          500
+        );
+      }
+
+      if (error instanceof Error) {
+        return c.json(
+          {
+            success: false,
+            message: error.message,
+            data: null,
+          },
+          500
+        );
+      }
+
+      return c.json(
+        {
+          success: false,
+          message: "Erro desconhecido",
+          data: null,
+        },
+        500
+      );
+    }
+  })
   .get("students/:param", clerkMiddleware(), async (c) => {
     const auth = getAuth(c);
     const param = c.req.param("param");
@@ -1005,8 +1205,9 @@ const app = new Hono()
       );
     }
   })
-  .get("students-session", clerkMiddleware(), async (c) => {
+  .get("goal/:param", clerkMiddleware(), async (c) => {
     const auth = getAuth(c);
+    const param = c.req.param("param");
 
     if (!auth?.userId) {
       return c.json(
@@ -1025,43 +1226,34 @@ const app = new Hono()
         },
       });
 
-      const students = await prisma.student.findMany({
+      if (!personalTrainer?.id) {
+        return c.json({
+          success: false,
+          message: "Nenhum personal trainer encontrado!",
+          data: null,
+        });
+      }
+
+      const goalsByStudents = await prisma.student.findMany({
         where: {
-          personalTrainerId: personalTrainer?.id,
-          workoutTemplate: {
-            some: {},
-          },
+          personalTrainerId: personalTrainer.id,
           AssignedWorkoutTemplate: {
-            some: {},
-          },
-          session: {
-            none: {},
+            some: {
+              customGoal: {
+                hasSome: [param as FitnessGoal],
+              },
+            },
           },
         },
-        select: {
-          id: true,
-          user: {
-            select: {
-              name: true,
-            },
-          },
-          workoutTemplate: {
-            select: {
-              id: true,
-            },
-          },
-          AssignedWorkoutTemplate: {
-            select: {
-              id: true,
-            },
-          },
+        include: {
+          user: true,
         },
       });
 
       return c.json({
         success: true,
         message: null,
-        data: students,
+        data: goalsByStudents,
       });
     } catch (error: unknown) {
       console.error(error);
@@ -1202,25 +1394,36 @@ const app = new Hono()
 
         let errorMessage = "Houve um erro ao processar sua requisição";
 
-        // Verificação tipo-safe do erro
         if (isClerkAPIResponseError(error)) {
-          errorMessage = error.errors?.[0]?.message || errorMessage;
-          if (error.errors?.[0]?.code === "form_password_pwned") {
-            errorMessage = "Senha comprometida: escolha uma senha mais segura";
+          // Verifica tanto o código quanto a mensagem em inglês
+          const clerkError = error.errors[0];
+
+          if (
+            clerkError.code === "form_identifier_exists" ||
+            clerkError.message.includes("email address is taken")
+          ) {
+            errorMessage = "E-mail já cadastrado!";
+          } else if (clerkError.code === "form_password_incorrect") {
+            errorMessage = "Senha incorreta";
+          } else if (clerkError.code === "rate_limit_exceeded") {
+            errorMessage = "Aguarde 1 minuto antes de tentar novamente";
+          } else if (clerkError.code === "form_password_pwned") {
+            errorMessage = "Senha comprometida, tente outra";
+          } else {
+            // Fallback para outras mensagens do Clerk
+            errorMessage = "Erro no serviço de autenticação";
           }
         } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
           if (error.code === "P2002") {
-            errorMessage = "Email já está em uso";
+            errorMessage = "E-mail já está em uso";
           }
         } else if (error instanceof Error) {
-          if (error.message.includes("Unique constraint")) {
-            errorMessage = "Email já está em uso";
-          } else {
-            errorMessage = error.message;
-          }
+          errorMessage = error.message.includes("Unique constraint")
+            ? "E-mail já está em uso"
+            : error.message;
         }
 
-        return c.json({ success: false, message: errorMessage });
+        return c.json({ success: false, message: errorMessage, data: null });
       }
     }
   )
@@ -1317,9 +1520,9 @@ const app = new Hono()
                       },
                     },
                     order: ex.order || 0,
-                    sets: ex.sets,
+                    sets: Number(ex.sets),
                     reps: ex.reps,
-                    rest: ex.rest,
+                    rest: Number(ex.rest),
                   })),
                 },
               })),
@@ -1431,6 +1634,9 @@ const app = new Hono()
             startDate: new Date(),
             studentId: json.studentId,
             trainerId: personalTrainer.id,
+            customGoal: template.defaultGoal,
+            customLevel: template.defaultLevel,
+            customTags: template.defaultTags,
           },
         });
 

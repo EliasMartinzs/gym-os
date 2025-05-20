@@ -93,7 +93,7 @@ export function RichTextEditor({
   );
 }
 
-const placeholder = "Comece a digitar...";
+const placeholder = "Descrição (opcional)";
 
 export function Plugins() {
   const [, setFloatingAnchorElem] = useState<HTMLDivElement | null>(null);

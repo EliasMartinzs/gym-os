@@ -55,25 +55,43 @@ export type WorkoutTemplateFormEditValues = z.infer<
 >;
 
 export const ExerciseSchema = z.object({
-  exerciseId: z.string().min(1, "Exercício é obrigatório"),
-  sets: z.number().min(1, "Mínimo 1 série"),
-  reps: z.string().min(1, "Repetições são obrigatórias"),
-  rest: z.number().min(0, "Não pode ser negativo").optional(),
+  exerciseId: z.string().min(1, {
+    message: "Exercício é obrigatório",
+  }),
+  sets: z.string().min(1, { message: "Mínimo 1 série" }),
+  reps: z.string().min(1, { message: "Repetições são obrigatórias" }),
+  rest: z.string().min(0, { message: "Não pode ser negativo" }).optional(),
   name: z.string().optional(),
-  type: z.string().min(1, "insira o tipo do exercicio"),
-  muscle: z.string().min(1, "insira o musculo do exercicio"),
-  equipment: z.string().min(1, "insira o equipamento do exercicio"),
-  difficulty: z.string().min(1, "insira a dificuldade do exercicio"),
-  instructions: z.string().min(1, "insira as instruçoes do exercicio"),
+  type: z.string().min(1, { message: "insira o tipo do exercicio" }),
+  muscle: z.string().min(1, { message: "insira o musculo do exercicio" }),
+  equipment: z
+    .string()
+    .min(1, { message: "insira o equipamento do exercicio" }),
+  difficulty: z
+    .string()
+    .min(1, { message: "insira a dificuldade do exercicio" }),
+  instructions: z
+    .string()
+    .min(1, { message: "insira as instruçoes do exercicio" }),
 });
 
 export const WorkoutDaySchema = z.object({
-  name: z.string().min(1, "Dia do treino é obrigatório"),
-  dayOfWeek: z.nativeEnum(DayOfWeek),
+  name: z
+    .string({
+      required_error: "Dia do treino é obrigatório",
+    })
+    .min(3, {
+      message: "Dia do treino é obrigatório",
+    }),
+  dayOfWeek: z.nativeEnum(DayOfWeek, {
+    message: "Selecione o dia da semana",
+  }),
   focusMuscle: z
     .array(z.nativeEnum(MuscleGroup))
-    .min(1, "Selecione pelo menos 1 grupo"),
-  exercises: z.array(ExerciseSchema).min(1, "Adicione pelo menos 1 exercício"),
+    .min(1, { message: "Selecione pelo menos 1 grupo" }),
+  exercises: z
+    .array(ExerciseSchema)
+    .min(1, { message: "Adicione pelo menos 1 exercício" }),
 });
 
 export const TemplateBasicSchema = z.object({
@@ -87,7 +105,9 @@ export const ReusableConfigSchema = z.object({
   goals: z
     .array(z.nativeEnum(FitnessGoal))
     .min(1, "Selecione pelo menos 1 objetivo"),
-  level: z.nativeEnum(DifficultyLevel),
+  level: z.nativeEnum(DifficultyLevel, {
+    message: "Selecione o nível de dificuldade",
+  }),
   tags: z.array(z.string()).optional(),
 });
 
@@ -122,7 +142,7 @@ export const NewStudentSchema = z.object({
   email: z.string().email({
     message: "Insira um email",
   }),
-  password: z.string().min(6, {
+  password: z.string().min(8, {
     message: "Insira a senha, minímo 6 caracteres",
   }),
   name: z.string().min(4, {

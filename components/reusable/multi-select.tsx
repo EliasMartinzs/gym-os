@@ -54,7 +54,7 @@ export function MultiSelect({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            "w-auto h-12 justify-between bg-transparent",
+            "w-auto h-12 justify-between bg-transparent border-input",
             className
           )}
         >

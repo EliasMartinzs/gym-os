@@ -1,5 +1,7 @@
 "use client";
 
+import { CreateButton } from "@/components/reusable/create-button";
+import { Tooltip } from "@/components/reusable/tootip";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -24,14 +26,19 @@ import { cn, parseDateString } from "@/lib/utils";
 import { NewStudenFormValues, NewStudentSchema } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InputMask } from "@react-input/mask";
-import { Loader2, X } from "lucide-react";
+import { Eye, EyeClosed, HelpCircle, X } from "lucide-react";
+import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 
 type Props = {
   setClose: () => void;
 };
 
-export const NewStudentForm = ({ setClose }: Props) => {
+export const CreateStudenForm = ({ setClose }: Props) => {
+  const [showPassword, setShowPassword] = useState<"password" | "text">(
+    "password"
+  );
+  const [error, setError] = useState("");
   const form = useForm<NewStudenFormValues>({
     resolver: zodResolver(NewStudentSchema),
     defaultValues: {
@@ -57,9 +64,15 @@ export const NewStudentForm = ({ setClose }: Props) => {
 
   function onSubmit(values: NewStudenFormValues) {
     mutation.mutate(values, {
-      onSuccess: () => {
-        form.reset();
-        setClose();
+      onSuccess: (data) => {
+        if (data.success) {
+          form.reset();
+          setClose();
+        } else {
+          setError(data.message);
+        }
+
+        return;
       },
     });
   }
@@ -68,16 +81,19 @@ export const NewStudentForm = ({ setClose }: Props) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-6 overflow-y-auto"
+        className="space-y-6 overflow-y-auto no-scrollbar"
       >
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder="Jonh doe" {...field} />
+                <Input
+                  placeholder="Nome"
+                  {...field}
+                  disabled={mutation.isPending}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -89,11 +105,11 @@ export const NewStudentForm = ({ setClose }: Props) => {
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>E-Mail</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="jonhdoe@gmail.com"
+                  placeholder="E-Mail"
                   type="email"
+                  disabled={mutation.isPending}
                   {...field}
                 />
               </FormControl>
@@ -107,9 +123,30 @@ export const NewStudentForm = ({ setClose }: Props) => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Senha</FormLabel>
               <FormControl>
-                <Input placeholder="******" type="password" {...field} />
+                <div className="relative">
+                  <Input
+                    placeholder="Senha"
+                    type={showPassword}
+                    {...field}
+                    disabled={mutation.isPending}
+                  />
+                  <button
+                    onClick={() =>
+                      setShowPassword((prevState) =>
+                        prevState === "password" ? "text" : "password"
+                      )
+                    }
+                    className="absolute top-3 right-3 transition-all cursor-pointer"
+                    type="button"
+                  >
+                    {showPassword === "password" ? (
+                      <EyeClosed className="text-muted-foreground" />
+                    ) : (
+                      <Eye className="text-muted-foreground" />
+                    )}
+                  </button>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -121,15 +158,15 @@ export const NewStudentForm = ({ setClose }: Props) => {
           name="phone"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Telefone</FormLabel>
               <FormControl>
                 <InputMask
                   {...field}
                   mask="+55 (__) _____-____"
-                  placeholder="(00) 00000-0000"
+                  placeholder="Telefone"
                   replacement={{ _: /\d/ }}
+                  disabled={mutation.isPending}
                   className={cn(
-                    "file:text-foreground placeholder:text-accent-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                    "file:text-foreground placeholder:text-muted-foreground border-input flex h-12 w-full min-w-0 focus:border-primary border-b bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
                     "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
                   )}
                 />
@@ -139,67 +176,63 @@ export const NewStudentForm = ({ setClose }: Props) => {
           )}
         />
 
-        <div className="w-full flex gap-3">
-          <FormField
-            control={form.control}
-            name="birthDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Data de nascimento</FormLabel>
-                <FormControl>
-                  <InputMask
-                    mask="__/__/____"
-                    onChange={(e) => {
-                      field.onChange(parseDateString(e.target.value));
-                    }}
-                    placeholder="00/00/0000"
-                    replacement={{ _: /\d/ }}
-                    className={cn(
-                      "file:text-foreground placeholder:text-accent-foreground dark:bg-input/30 border-input flex h-9 w-full min-w-0 rounded-md border bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
-                      "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
-                    )}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        <FormField
+          control={form.control}
+          name="birthDate"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <InputMask
+                  mask="__/__/____"
+                  onChange={(e) => {
+                    field.onChange(parseDateString(e.target.value));
+                  }}
+                  placeholder="Data de nascimento"
+                  replacement={{ _: /\d/ }}
+                  disabled={mutation.isPending}
+                  className={cn(
+                    "file:text-foreground placeholder:text-muted-foreground border-input flex h-12 w-full min-w-0 focus:border-primary border-b bg-transparent px-3 py-1 text-base transition-[color,box-shadow] outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm",
+                    "aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive"
+                  )}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
-          <FormField
-            control={form.control}
-            name="gender"
-            render={({ field }) => (
-              <FormItem className="space-y-3">
-                <FormLabel>Gênero</FormLabel>
-                <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    className="flex items-start justify-start"
-                  >
-                    <FormItem className="flex items-center">
-                      <FormControl>
-                        <RadioGroupItem value="MALE" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Masculino</FormLabel>
-                    </FormItem>
-                    <FormItem className="flex items-center">
-                      <FormControl>
-                        <RadioGroupItem value="FEMALE" />
-                      </FormControl>
-                      <FormLabel className="font-normal">Feminino</FormLabel>
-                    </FormItem>
-                  </RadioGroup>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+        <FormField
+          control={form.control}
+          name="gender"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex items-center justify-start"
+                  disabled={mutation.isPending}
+                >
+                  <FormItem className="flex items-center">
+                    <FormControl>
+                      <RadioGroupItem value="MALE" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Masculino</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center">
+                    <FormControl>
+                      <RadioGroupItem value="FEMALE" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Feminino</FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <div className="space-y-4 w-full">
-          <FormLabel>Lesões/Problemas de Saúde</FormLabel>
-
           {fields.map((field, index) => (
             <div key={field.id} className="flex items-center gap-2">
               <FormField
@@ -211,6 +244,7 @@ export const NewStudentForm = ({ setClose }: Props) => {
                       <Input
                         {...field}
                         placeholder="Ex: Lesão no joelho, Hérnia de disco..."
+                        disabled={mutation.isPending}
                       />
                     </FormControl>
                     <FormMessage />
@@ -228,9 +262,26 @@ export const NewStudentForm = ({ setClose }: Props) => {
             </div>
           ))}
 
-          <Button type="button" variant="outline" onClick={() => append("")}>
-            Adicionar Lesão/Problema
-          </Button>
+          <div className="flex items-center gap-x-3 w-full">
+            <Button type="button" variant="outline" onClick={() => append("")}>
+              Adicionar Lesão/Problema
+            </Button>
+            <Tooltip
+              trigger={<HelpCircle className="size-5 text-muted-foreground" />}
+              text={
+                <div className="space-y-4">
+                  <p className="font-medium">
+                    Aqui você pode adicionar as lesões, limitações físicas ou
+                    condições de saúde dos seus alunos. Isso ajuda a:
+                  </p>
+
+                  <p>Lesões antigas (ex.: lombar, joelho, ombro).</p>
+                  <p>Problemas crônicos (ex.: hérnia de disco, tendinite).</p>
+                  <p>Restrições médicas (ex.: não pode fazer impacto).</p>
+                </div>
+              }
+            />
+          </div>
         </div>
 
         <div className="flex items-start gap-4">
@@ -244,6 +295,7 @@ export const NewStudentForm = ({ setClose }: Props) => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={mutation.isPending}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Status" />
@@ -272,6 +324,7 @@ export const NewStudentForm = ({ setClose }: Props) => {
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    disabled={mutation.isPending}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Status" />
@@ -291,18 +344,9 @@ export const NewStudentForm = ({ setClose }: Props) => {
           />
         </div>
 
-        <Button
-          type="submit"
-          variant="primary"
-          size="full"
-          disabled={mutation.isPending}
-        >
-          {mutation.isPending ? (
-            <Loader2 className="size-5 animate-spin" />
-          ) : (
-            "Criar novo aluno"
-          )}
-        </Button>
+        <div className="p-2 text-center text-destructive">{error}</div>
+
+        <CreateButton isPending={mutation.isPending} label="Criar novo aluno" />
       </form>
     </Form>
   );

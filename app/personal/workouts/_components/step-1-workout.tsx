@@ -19,7 +19,7 @@ type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
 };
 
-export const Step1Form = ({ form }: Props) => {
+export const Step1Workout = ({ form }: Props) => {
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-medium italic">Informações Básicas</h2>
@@ -29,9 +29,8 @@ export const Step1Form = ({ form }: Props) => {
         name="name"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Nome do Template</FormLabel>
             <FormControl>
-              <Input placeholder="Meu Plano de Treino" {...field} />
+              <Input placeholder="Nome do template" {...field} />
             </FormControl>
             <FormMessage />
           </FormItem>
@@ -43,7 +42,6 @@ export const Step1Form = ({ form }: Props) => {
         name="description"
         render={({ field }) => (
           <FormItem className="xl:min-w-6xl">
-            <FormLabel>Descrição (Opcional)</FormLabel>
             <FormControl>
               <RichTextEditor onChange={field.onChange} />
             </FormControl>
@@ -65,7 +63,7 @@ export const Step1Form = ({ form }: Props) => {
                 />
               </FormControl>
               <FormLabel className="flex items-center gap-x-3">
-                Template Reutilizável
+                Reutilizável
                 <Tooltip
                   text={
                     <div className="flex flex-col mx-auto max-w-sm gap-y-2 text-start">
@@ -76,18 +74,20 @@ export const Step1Form = ({ form }: Props) => {
                       </p>
 
                       <p>
-                        - Salve configurações padrão (metas, nível de
+                        Salve configurações padrão (metas, nível de
                         dificuldade).
                       </p>
                       <p>
-                        - Aplique o mesmo template a diferentes alunos - Faça
+                        Aplique o mesmo template a diferentes alunos Faça
                         ajustes individuais para cada aluno quando necessário
                         Desmarque para criar um treino personalizado apenas para
                         um aluno específico.
                       </p>
                     </div>
                   }
-                  trigger={<HelpCircle className="size-5" />}
+                  trigger={
+                    <HelpCircle className="size-5 text-muted-foreground" />
+                  }
                 />
               </FormLabel>
               <FormMessage />
@@ -107,7 +107,7 @@ export const Step1Form = ({ form }: Props) => {
                 />
               </FormControl>
               <FormLabel className="flex items-center gap-x-2">
-                Template pubíco
+                Pubíco
                 <Tooltip
                   text={
                     <div className="flex flex-col mx-auto max-w-sm gap-y-2 text-start">
@@ -115,9 +115,9 @@ export const Step1Form = ({ form }: Props) => {
                         Templates públicos ficam visíveis para:
                       </p>
 
-                      <p>- Todos os professores do The Personal</p>
+                      <p>Todos os professores do The Personal</p>
                       <p>
-                        - Podem ser usados como base por outros profissionais.
+                        Podem ser usados como base por outros profissionais.
                       </p>
 
                       <p>
@@ -127,7 +127,9 @@ export const Step1Form = ({ form }: Props) => {
                       </p>
                     </div>
                   }
-                  trigger={<HelpCircle className="size-5" />}
+                  trigger={
+                    <HelpCircle className="size-5 text-muted-foreground" />
+                  }
                 />
               </FormLabel>
               <FormMessage />

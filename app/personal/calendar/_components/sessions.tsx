@@ -54,7 +54,7 @@ export const Sessions = () => {
         <Image
           src={NoData}
           alt="create-user"
-          className="object-contain w-96 h-96 xl:w-[600px] xl:h-[600px]"
+          className="object-contain max-md:size-64 size-96 xl:w-[600px] xl:h-[600px]"
         />
       </div>
     );
@@ -76,8 +76,6 @@ export const Sessions = () => {
       <InteractiveDatePicker />
 
       <SessionsFilters />
-
-      <Separator />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         {data?.data.map((session) => (

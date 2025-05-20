@@ -2,10 +2,10 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 
+import { Tooltip } from "@/components/reusable/tootip";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import {
@@ -25,11 +25,12 @@ import { cn } from "@/lib/utils";
 import { WorkoutTemplateSchema } from "@/lib/validations";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { CalendarIcon, HelpCircle, Loader2 } from "lucide-react";
+import Image from "next/image";
 import { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { ConfigForm } from "./config-form";
+import { ConfigWorkout } from "./config-workout";
 
 type Props = {
   form: UseFormReturn<z.infer<typeof WorkoutTemplateSchema>>;
@@ -37,7 +38,7 @@ type Props = {
   removeTag: (tag: string) => void;
 };
 
-export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
+export const Step2Workout = ({ form, handleKeyDown, removeTag }: Props) => {
   const { data, isError, isLoading } = getStudents("user");
 
   const students = useMemo(() => {
@@ -46,6 +47,7 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
       .map((student) => ({
         id: student.id,
         name: student.user.name,
+        avatarUrl: student.user.avatarUrl,
       }));
   }, [data]);
 
@@ -70,7 +72,6 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
             name="assigned.studentId"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Alunos</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger className="w-full">
@@ -80,6 +81,14 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
                   <SelectContent>
                     {students?.map((option) => (
                       <SelectItem key={option.id} value={option.id}>
+                        <Image
+                          src={option.avatarUrl ?? "/no-user.png"}
+                          width={32}
+                          height={32}
+                          alt={option.name}
+                          className="object-cover rounded-full"
+                          loading="lazy"
+                        />{" "}
                         {option.name}
                       </SelectItem>
                     ))}
@@ -95,24 +104,49 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
             name="assigned.startDate"
             render={({ field }) => (
               <FormItem className="flex flex-col">
-                <FormLabel>Data de ínicio</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
                     <FormControl>
-                      <Button
-                        variant={"outline"}
-                        className={cn(
-                          "w-[240px] pl-3 text-left font-normal",
-                          !field.value && "text-muted-foreground"
-                        )}
-                      >
-                        {field.value ? (
-                          format(field.value, "PPP", { locale: ptBR })
-                        ) : (
-                          <span>Escolha uma data</span>
-                        )}
-                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                      </Button>
+                      <div className="flex items-center gap-x-2">
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground"
+                          )}
+                        >
+                          {field.value ? (
+                            format(field.value, "PPP", { locale: ptBR })
+                          ) : (
+                            <span>Escolha uma data</span>
+                          )}
+                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                        </Button>
+
+                        <Tooltip
+                          trigger={
+                            <HelpCircle className="size-5 text-muted-foreground" />
+                          }
+                          text={
+                            <div className="space-y-4">
+                              <p className="font-medium">
+                                Esta é a data em que você começou oficialmente a
+                                treinar este aluno. Ela serve para:
+                              </p>
+
+                              <p>
+                                Calcular a evolução do aluno (progresso ao longo
+                                do tempo).
+                              </p>
+                              <p>Organizar seu cronograma de acompanhamento.</p>
+                              <p>
+                                Gerar relatórios de tempo de treino (ex.: 3
+                                meses, 6 meses).
+                              </p>
+                            </div>
+                          }
+                        />
+                      </div>
                     </FormControl>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0" align="start">
@@ -135,7 +169,7 @@ export const Step2Form = ({ form, handleKeyDown, removeTag }: Props) => {
           />
         </div>
       ) : (
-        <ConfigForm
+        <ConfigWorkout
           form={form}
           handleKeyDown={handleKeyDown}
           removeTag={removeTag}

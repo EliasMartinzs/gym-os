@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 
-export const NewTemplateWorkout = () => {
+export const CreateWorkout = () => {
   const [open, setOpen] = useState(false);
   return (
     <ResponsiveModal
@@ -13,7 +13,7 @@ export const NewTemplateWorkout = () => {
       setOpen={setOpen}
       trigger={
         <Button className="flex gap-x-2 cursor-pointer">
-          Novo template treino <PlusCircle />
+          Novo <PlusCircle />
         </Button>
       }
       key={"new-template-modal"}

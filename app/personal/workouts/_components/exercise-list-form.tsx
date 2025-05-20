@@ -12,6 +12,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,8 +53,8 @@ export const ExerciseListForm = ({
       {
         exerciseId: "",
         reps: "",
-        rest: undefined,
-        sets: 0,
+        rest: "",
+        sets: "",
         difficulty: "",
         equipment: "",
         instructions: "",
@@ -62,7 +63,10 @@ export const ExerciseListForm = ({
         type: "",
       },
     ]);
-    await form.trigger(`days.${dayIndex}.exercises`);
+
+    return form.formState.isDirty
+      ? form.trigger(`days.${dayIndex}.exercises`)
+      : true;
   };
 
   return (
@@ -76,10 +80,7 @@ export const ExerciseListForm = ({
 
       <div className="flex flex-col gap-4">
         {fields.map((exercise, exerciseIndex) => (
-          <div
-            key={exercise.id}
-            className="bg-accent text-accent-foreground p-4 rounded-3xl space-y-4"
-          >
+          <div key={exercise.id} className="space-y-4 border-t">
             <div className="flex justify-between items-center">
               <h5 className="font-medium">Exercício {exerciseIndex + 1}</h5>
               <Button
@@ -100,7 +101,6 @@ export const ExerciseListForm = ({
                 name={`days.${dayIndex}.exercises.${exerciseIndex}.exerciseId`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Exercício</FormLabel>
                     <Popover modal>
                       <PopoverTrigger asChild>
                         <FormControl>
@@ -152,6 +152,7 @@ export const ExerciseListForm = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -162,18 +163,15 @@ export const ExerciseListForm = ({
                 name={`days.${dayIndex}.exercises.${exerciseIndex}.sets`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Séries</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min="1"
-                        className="bg-background"
+                        className="bg-transparent"
+                        placeholder="Séries (3)"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
+                        type="number"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -184,14 +182,14 @@ export const ExerciseListForm = ({
                 name={`days.${dayIndex}.exercises.${exerciseIndex}.reps`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Repetições</FormLabel>
                     <FormControl>
                       <Input
-                        className="bg-background"
-                        placeholder="12-15"
+                        className="bg-transparent"
+                        placeholder="Repetições (12 - 15)"
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -202,18 +200,15 @@ export const ExerciseListForm = ({
                 name={`days.${dayIndex}.exercises.${exerciseIndex}.rest`}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Descanso (segundos)</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
-                        min="0"
-                        className="bg-background"
+                        className="bg-transparent"
+                        placeholder="Descanso (segundos)"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value) || 0)
-                        }
+                        type="number"
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -278,6 +273,7 @@ export const ExerciseListForm = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -340,6 +336,7 @@ export const ExerciseListForm = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -402,6 +399,7 @@ export const ExerciseListForm = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -464,6 +462,7 @@ export const ExerciseListForm = ({
                         </Command>
                       </PopoverContent>
                     </Popover>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

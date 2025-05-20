@@ -6,9 +6,9 @@ export interface ExerciseInput {
   muscle?: string;
   type?: string;
   order?: number;
-  sets?: number;
+  sets?: string;
   reps?: number;
-  rest?: number;
+  rest?: string;
 }
 
 export interface WorkoutDayInput {

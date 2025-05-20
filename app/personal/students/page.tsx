@@ -1,7 +1,7 @@
 import { Main } from "@/components/reusable/main";
 import { BirthdayStudents } from "./_components/birthdays-students";
 import { StudentsDurationChart } from "./_components/duration-students";
-import { NewStudent } from "./_components/new-student";
+import { CreateStudent } from "./_components/create-student";
 import { StatusStudentsChart } from "./_components/status-students-chart";
 import { DataTable } from "./data-table";
 
@@ -9,8 +9,8 @@ export default function StudentsPersonal() {
   return (
     <Main>
       <div className="w-full flex items-center justify-between">
-        <h2 className="text-xl lg:text-3xl font-medium italic">Meus alunos</h2>
-        <NewStudent />
+        <h2 className="text-lg lg:text-3xl font-medium italic">Meus alunos</h2>
+        <CreateStudent />
       </div>
 
       <DataTable />

@@ -26,7 +26,8 @@ export const MenuLinks = ({ links, setOpen }: Props) => {
           href={href}
           className={cn(
             "size-16 rounded-full grid place-items-center transition-colors hover:bg-card/50 dark:hover:bg-primary",
-            pathname === href && "bg-primary hover:bg-primary/50"
+            pathname === href &&
+              "bg-primary hover:bg-primary/50 text-primary-foreground"
           )}
           onClick={() => setOpen !== undefined && setOpen(false)}
         >

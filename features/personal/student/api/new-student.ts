@@ -23,29 +23,25 @@ export const newStudent = () => {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          result.message ||
-            "Houve um erro ao criar seu estudante, tente novamente!"
-        );
+        return {
+          success: result.success,
+          message: result.message,
+        };
       }
 
       return result;
     },
     onSuccess: async (data) => {
-      toast.success(data.message || "Usuário criado com sucesso", {
-        id: "student",
-      });
+      data.success &&
+        toast.success(data.message, {
+          id: "student",
+        });
 
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["students"] }),
         queryClient.invalidateQueries({ queryKey: ["status"] }),
         queryClient.invalidateQueries({ queryKey: ["students-by-birthdate"] }),
       ]);
-    },
-    onError: (error) => {
-      toast.error(error.message || "Erro ao criar usuário", {
-        id: "student",
-      });
     },
   });
 

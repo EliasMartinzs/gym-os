@@ -2,11 +2,11 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { Tooltip } from "@/components/reusable/tootip";
 import {
   Select,
   SelectContent,
@@ -16,11 +16,12 @@ import {
 } from "@/components/ui/select";
 import { SelectOptions } from "@/lib/enum-tranlations";
 import { WorkoutTemplateSchema } from "@/lib/validations";
+import { HelpCircle } from "lucide-react";
 import { UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { MultiSelect } from "../../../../components/reusable/multi-select";
 
-export const ConfigForm = ({
+export const ConfigWorkout = ({
   form,
   handleKeyDown,
   removeTag,
@@ -36,7 +37,6 @@ export const ConfigForm = ({
         name="config.goals"
         render={({ field }) => (
           <FormItem className="space-y-1">
-            <FormLabel>Selecione o objetivo</FormLabel>
             <FormControl>
               <MultiSelect
                 selected={field.value}
@@ -49,7 +49,10 @@ export const ConfigForm = ({
             <div className="flex flex-wrap gap-3">
               {field.value.length > 0 &&
                 field.value.map((value) => (
-                  <small key={value} className="p-1 px-2 rounded-full">
+                  <small
+                    key={value}
+                    className="p-1 px-2 rounded-xl border border-primary"
+                  >
                     {
                       SelectOptions.FitnessGoal.find(
                         (option) => option.value === value
@@ -63,21 +66,20 @@ export const ConfigForm = ({
         )}
       />
 
-      <div className="flex items-start text-nowrap gap-10">
+      <div className="flex max-md:flex-col items-start text-nowrap gap-x-10 gap-y-4">
         <div>
           <FormField
             control={form.control}
             name="config.level"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nível de dificuldade</FormLabel>
+              <FormItem className="w-full">
                 <Select
                   onValueChange={field.onChange}
                   defaultValue={field.value}
                 >
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione o nível" />
+                      <SelectValue placeholder="Selecione o nível de dificuldade" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
@@ -94,26 +96,54 @@ export const ConfigForm = ({
           />
         </div>
 
-        <div>
+        <div className="w-full">
           <FormField
             control={form.control}
             name="config.tags"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Tags</FormLabel>
                 <FormControl>
                   <div>
-                    <Input
-                      placeholder="Digite uma tag e pressione Enter"
-                      onKeyDown={handleKeyDown}
-                    />
+                    <div className="flex items-center gap-x-2">
+                      <Input
+                        placeholder="Digite uma tag e pressione Enter"
+                        onKeyDown={handleKeyDown}
+                      />
+                      <Tooltip
+                        trigger={
+                          <HelpCircle className="size-5 text-muted-foreground" />
+                        }
+                        text={
+                          <div className="space-y-4">
+                            <p className="font-medium">
+                              Use tags para classificar e filtrar os treinos dos
+                              seus alunos. Elas ajudam a:
+                            </p>
+                            <p>
+                              dentificar objetivos (ex.: emagrecimento,
+                              hipertrofia, condicionamento).
+                            </p>
+                            <p>
+                              Marcar especificidades (ex.: lesão no ombro,
+                              pós-reabilitação).
+                            </p>
+                            <p>
+                              Avançado Pré-competição / Manutenção Gestante /
+                              Terceira Idade
+                            </p>
+                          </div>
+                        }
+                      />
+                    </div>
                     <div className="flex flex-wrap gap-2 mt-2">
                       {field.value?.map((tag) => (
                         <div
                           key={tag}
                           className="flex flex-wrap gap-3 bg-card px-2 py-1 rounded-full items-center"
                         >
-                          <small className="">{tag}</small>
+                          <small className="border py-1 px-2 rounded-2xl">
+                            {tag}
+                          </small>
                           <button
                             type="button"
                             onClick={() => removeTag(tag)}
