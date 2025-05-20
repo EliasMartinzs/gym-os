@@ -54,7 +54,7 @@ export const BirthdayStudents = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {currentUsers.map((user) => (
             <Link
-              href={`/personal/${user.id}`}
+              href={`/personal/student/${user.id}`}
               key={user.id}
               className="bg-card rounded-xl p-2 flex items-center gap-4 border shadow-3xl"
             >

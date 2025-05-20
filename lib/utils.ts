@@ -25,6 +25,16 @@ export function formatDate(date: Date | string | number): string {
   return `${day}/${month}/${year}`;
 }
 
+export function getYearStudent(date: Date) {
+  const newDate = new Date();
+
+  const year = date.getFullYear();
+
+  const result = newDate.getFullYear() - year;
+
+  return `${result} anos`;
+}
+
 /**
  * Converte uma string de data no formato "dd/mm/aaaa" para um objeto Date.
  * Retorna undefined se a data for inválida ou não estiver no formato correto.

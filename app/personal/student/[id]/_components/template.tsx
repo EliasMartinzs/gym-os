@@ -1,5 +1,5 @@
 import { ResponsiveModal } from "@/components/reusable/responsive-modal";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import client from "@/lib/client";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { DayOfWeek, DifficultyLevel } from "@prisma/client";
@@ -10,6 +10,8 @@ import { Target } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTheme } from "next-themes";
 import Image from "next/image";
+import Link from "next/link";
+import { CreateWorkout } from "@/app/personal/workouts/_components/create-workout";
 
 type FullResponse = InferResponseType<
   (typeof client.api.personal.student)[":id"]["$get"]
@@ -28,12 +30,28 @@ export const TemplateStudent = ({ workoutTemplate }: Props) => {
   const { theme } = useTheme();
 
   if (!workoutTemplate) {
-    return <>Nenhum treino até o momento</>;
+    return (
+      <div className="w-full flex items-center justify-center mt-5 flex-col gap-6">
+        <h4 className="text-lg xl:text-2xl text-center">
+          Este aluno ainda não tem nenhum plano de treino cadastrado, crie um ou
+          reutilize um!
+        </h4>
+
+        <div className="flex items-center gap-x-2">
+          <Link
+            href="/personal/workouts"
+            className={buttonVariants({ variant: "link" })}
+          >
+            Reutilizar
+          </Link>
+          <CreateWorkout />
+        </div>
+      </div>
+    );
   }
 
   const { name, description, days, defaultGoal, defaultLevel, defaultTags } =
     workoutTemplate;
-  console.log(workoutTemplate);
 
   return (
     <div className="space-y-6">

@@ -67,7 +67,7 @@ export const TotalStudentChart = () => {
 
   if (isError) return <></>;
 
-  if (!data?.data) {
+  if (!data?.data || (data.data.MALE === 0 && data.data.FEMALE === 0)) {
     return (
       <NoData
         title="Tudo pronto para começar! "
