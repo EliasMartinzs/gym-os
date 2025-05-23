@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { newStudent } from "@/features/personal/student/api/new-student";
+import { postStudent } from "@/features/personal/student/api/post-student";
 import { SelectOptions } from "@/lib/enum-tranlations";
 import { cn, parseDateString } from "@/lib/utils";
 import { NewStudenFormValues, NewStudentSchema } from "@/lib/validations";
@@ -60,7 +60,7 @@ export const CreateStudenForm = ({ setClose }: Props) => {
     name: "injuries" as never,
   });
 
-  const mutation = newStudent();
+  const mutation = postStudent();
 
   function onSubmit(values: NewStudenFormValues) {
     mutation.mutate(values, {

@@ -10,7 +10,7 @@ type Request = InferRequestType<
   (typeof client.api.personal)["new-student"]["$post"]
 >["json"];
 
-export const newStudent = () => {
+export const postStudent = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<Response, Error, Request>({

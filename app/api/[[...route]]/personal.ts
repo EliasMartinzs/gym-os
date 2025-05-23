@@ -1386,6 +1386,12 @@ const app = new Hono()
           }),
         ]);
 
+        client.users.updateUserMetadata(auth?.userId, {
+          publicMetadata: {
+            role: "STUDENT",
+          },
+        });
+
         return c.json({
           success: true,
           message: "Estudante criado com sucesso",
