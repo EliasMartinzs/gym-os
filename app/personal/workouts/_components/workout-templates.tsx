@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import NoDataImg from "@/public/undraw_no-data_ig65.svg";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
+import { State } from "../../students/_components/status-students-chart-states";
 import { WorkoutCard } from "./workout-card";
 import { WorkoutFilters } from "./workout-filters";
 
@@ -21,7 +21,8 @@ export const WorkoutTemplates = () => {
   const searchParams = useSearchParams();
   const filters = new URLSearchParams(searchParams.toString());
 
-  const { data, isLoading, isError, refetch } = getWorkouts(filters);
+  const { data, isLoading, isError, refetch, isRefetching } =
+    getWorkouts(filters);
 
   if (isLoading) {
     return (
@@ -31,16 +32,17 @@ export const WorkoutTemplates = () => {
     );
   }
 
-  if (isError) {
+  if (isError)
     return (
-      <div className="text-center space-y-4">
-        <p>Houve um erro tente novamente</p>
-        <Button onClick={() => refetch()} variant="primary">
-          Tente novamente
-        </Button>
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  }
 
   if (searchParams.toString() && data?.data?.length === 0) {
     return (

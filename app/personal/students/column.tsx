@@ -17,6 +17,8 @@ import { deleteStudent } from "@/features/personal/student/api/delete-student";
 import { MoreHorizontal, Trash, UserRound } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { getStudent } from "@/features/personal/student/api/get-student";
 
 export interface StudentTableData {
   id: string;
@@ -65,6 +67,7 @@ const Actions = ({ row }: { row: Row<StudentTableData> }) => {
   const { mutate } = deleteStudent(student.id);
   const [open, setOpen] = useState(false);
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   return (
     <DropdownMenu>
@@ -83,6 +86,12 @@ const Actions = ({ row }: { row: Row<StudentTableData> }) => {
             className="cursor-pointer justify-start"
             size="full"
             onClick={() => router.push(`/personal/student/${student.id}`)}
+            onMouseEnter={() =>
+              queryClient.prefetchQuery({
+                queryKey: ["student", student.id],
+                queryFn: () => getStudent(student.id),
+              })
+            }
           >
             Perfil <UserRound className="ml-2" />
           </Button>

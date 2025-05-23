@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const getGoalsStudents = (goal: FitnessGoal) => {
   const query = useQuery({
-    queryKey: ["goals-students"],
+    queryKey: ["goals-students", goal.toString()],
     queryFn: async () => {
       const response = await client.api.personal.goal[":param"].$get({
         param: {
@@ -24,6 +24,10 @@ export const getGoalsStudents = (goal: FitnessGoal) => {
 
       return result;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   return query;

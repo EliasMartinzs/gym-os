@@ -1,6 +1,7 @@
 "use client";
 
 import { NoData } from "@/components/reusable/no-data";
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -23,6 +24,7 @@ import {
   TooltipProps,
   XAxis,
 } from "recharts";
+import { State } from "./status-students-chart-states";
 
 const chartConfig = {
   name: {
@@ -48,14 +50,31 @@ const CustomChartTooltip = ({
 };
 
 export function StudentsDurationChart() {
-  const { data, isError, isLoading } = getDuration();
+  const { data, isError, isLoading, isRefetching, refetch } = getDuration();
 
   const chartData = useMemo(() => {
     return data?.data?.filter((d) => d.durationAsStudent !== 0);
   }, [data]);
 
-  if (isLoading) return <div>Carregando...</div>;
-  if (isError) return <div>Erro ao carregar dados</div>;
+  if (isLoading)
+    return (
+      <SkeletonLoading className="lg:max-w-2xl min-h-96">
+        Carregando seus por tempo de relacionamento...
+      </SkeletonLoading>
+    );
+
+  if (isError)
+    return (
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
+    );
+
   if (!chartData || chartData.length === 0) {
     return (
       <NoData

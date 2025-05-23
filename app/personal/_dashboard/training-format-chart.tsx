@@ -1,6 +1,5 @@
 "use client";
 
-import { Loader2 } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -24,6 +23,8 @@ import {
 } from "@/components/ui/chart";
 import { getFormat } from "@/features/personal/student/api/get-format";
 import { NoData } from "../../../components/reusable/no-data";
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
+import { State } from "../students/_components/status-students-chart-states";
 
 const chartConfig = {
   name: {
@@ -48,16 +49,21 @@ const CustomChartTootlip = ({
 };
 
 export function TrainingFormatChart() {
-  const { data, isLoading, isError } = getFormat();
+  const { data, isLoading, isError, isRefetching, refetch } = getFormat();
 
-  if (isLoading) {
+  if (isLoading) return <SkeletonLoading />;
+
+  if (isError)
     return (
-      <div className="flex-1 h-full grid place-items-center">
-        <Loader2 className="size-6 animate-spin" />
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  }
-  if (isError) return <></>;
 
   const haveStudent = data?.data?.some((student) => student.count > 0);
 

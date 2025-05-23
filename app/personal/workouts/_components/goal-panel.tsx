@@ -94,7 +94,7 @@ export const GoalPanel = ({ goal, closePanel }: Props) => {
                 height={64}
                 className="object-contain rounded-2xl"
               />
-              <div className="flex flex-col items-start justify-center gap-y-1">
+              <div className="flex flex-col items-start justify-center gap-y-1 text-center">
                 <h6 className="text-lg">{item.user.name}</h6>
                 <p className="text-sm">{item.user.email}</p>
                 <p className="text-sm">{item.user.phone}</p>

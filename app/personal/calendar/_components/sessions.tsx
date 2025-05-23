@@ -1,21 +1,21 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { getSessions } from "@/features/personal/student/api/get-sessions";
 import NoData from "@/public/undraw_no-data_ig65.svg";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import { State } from "../../students/_components/status-students-chart-states";
 import { CreateSession } from "./create-session";
 import InteractiveDatePicker from "./interactive-date-picker";
 import { SessionCard } from "./session-card";
 import { SessionsFilters } from "./sessions-filters";
-import { useSearchParams } from "next/navigation";
-import { Separator } from "@/components/ui/separator";
-
 export const Sessions = () => {
   const searchParams = useSearchParams();
   const filters = new URLSearchParams(searchParams.toString());
-  const { data, isLoading, isError, refetch } = getSessions(filters);
+  const { data, isLoading, isError, refetch, isRefetching } =
+    getSessions(filters);
 
   if (isLoading) {
     return (
@@ -60,16 +60,17 @@ export const Sessions = () => {
     );
   }
 
-  if (isError) {
+  if (isError)
     return (
-      <div className="text-center space-y-4">
-        <p>Houve um erro tente novamente</p>
-        <Button onClick={() => refetch()} variant="primary">
-          Tente novamente
-        </Button>
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  }
 
   return (
     <div className="space-y-6">

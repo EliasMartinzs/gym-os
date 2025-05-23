@@ -83,7 +83,7 @@ export default function Student({ params }: Props) {
   return (
     <div className="space-y-8">
       <div className="flex flex-col relative max-lg:items-center justify-center max-xl:hidden">
-        <div className="min-w-full h-52 xl:h-64 relative hidden xl:block">
+        <div className="min-w-full h-64 relative hidden xl:block rounded-3xl">
           <Image
             src={Background}
             alt="bg"
@@ -92,18 +92,18 @@ export default function Student({ params }: Props) {
             loading="lazy"
           />
         </div>
-        <div className="xl:-translate-y-20 xl:ml-20 flex flex-col xl:flex-row gap-8 xl:items-end">
-          <div className="size-64 rounded-3xl">
+        <div className="flex gap-x-5 items-end">
+          <div className="relative size-40 -translate-y-20 ml-20">
             <Image
               src={data.avatarUrl ?? "/no-user.png"}
               alt={data.name as string}
               loading="lazy"
-              className="object-cover object-center rounded-3xl"
+              className="object-contain object-center rounded-3xl"
               fill
             />
           </div>
 
-          <div className="space-y-5 max-xl:mt-96">
+          <div className="space-y-5 -translate-y-10">
             <h2 className="text-2xl font-semibold max-xl:text-center text-start">
               {data.name}
             </h2>

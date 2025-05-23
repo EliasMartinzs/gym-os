@@ -1,8 +1,9 @@
 "use client";
 
-import { Loader2, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { Pie, PieChart, TooltipProps } from "recharts";
 
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/chart";
 import { getTopExercises } from "@/features/personal/student/api/top-exercises";
 import { NoData } from "../../../components/reusable/no-data";
+import { State } from "../students/_components/status-students-chart-states";
 
 const chartConfig = {} satisfies ChartConfig;
 
@@ -37,16 +39,22 @@ const CustomChartTootlip = ({
 };
 
 export function TopExercisesChart() {
-  const { data, isLoading, isError } = getTopExercises();
+  const { data, isLoading, isError, isRefetching, refetch } = getTopExercises();
 
-  if (isLoading) {
+  if (isLoading) return <SkeletonLoading />;
+
+  if (isError)
     return (
-      <div className="flex-1 h-full grid place-items-center">
-        <Loader2 className="size-6 animate-spin" />
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  }
-  if (isError) return;
+
   if (!data?.data || data.data.length === 0) {
     return (
       <NoData

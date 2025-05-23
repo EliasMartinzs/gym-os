@@ -19,7 +19,7 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={ptBR}>
       <html lang="en" suppressHydrationWarning>
-        <body className={` antialiased`}>
+        <body>
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

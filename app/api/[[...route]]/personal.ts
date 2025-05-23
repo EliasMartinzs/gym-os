@@ -1,7 +1,8 @@
 import prisma from "@/lib/db";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { calculateDuration } from "@/lib/utils";
-import { FullSessionSchema, NewStudentSchema } from "@/lib/validations";
+import { FullSessionSchema } from "@/validations/session";
+import { NewStudentSchema } from "@/lib/validations";
 import { isClerkAPIResponseError } from "@clerk/nextjs/errors";
 import { clerkClient } from "@clerk/nextjs/server";
 import { clerkMiddleware, getAuth } from "@hono/clerk-auth";

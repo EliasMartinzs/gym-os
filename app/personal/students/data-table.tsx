@@ -1,5 +1,6 @@
 "use client";
 
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -28,7 +29,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { CreateStudent } from "./_components/create-student";
 import { columns, StudentTableData } from "./column";
-import { ErrorState, LoadingState } from "./data-table-states";
+import { ErrorState } from "./data-table-states";
 import { useTableData } from "./use-data-table";
 
 export function DataTable() {
@@ -46,7 +47,12 @@ export function DataTable() {
     state: { columnFilters },
   });
 
-  if (isLoading) return <LoadingState />;
+  if (isLoading)
+    return (
+      <SkeletonLoading className="h-52">
+        Carregando tabela de alunos...
+      </SkeletonLoading>
+    );
   if (isError) return <ErrorState onRetry={refetch} />;
   if (!data || data.length === 0) {
     return (

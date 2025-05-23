@@ -14,14 +14,32 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { NoData } from "@/components/reusable/no-data";
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
+import { State } from "./status-students-chart-states";
 
 export const BirthdayStudents = () => {
-  const { data, isLoading, isError } = getStudentsByBirthDate();
+  const { data, isLoading, isError, refetch, isRefetching } =
+    getStudentsByBirthDate();
   const [currentPage, setCurrentPage] = useState(1);
   const usersPerPage = 12;
 
-  if (isLoading) return <></>;
-  if (isError) return <></>;
+  if (isLoading)
+    return (
+      <SkeletonLoading className="min-h-96">
+        Carregando aniversariantes...
+      </SkeletonLoading>
+    );
+  if (isError)
+    return (
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
+    );
 
   if (!data?.data || data?.data?.length === 0) {
     return (

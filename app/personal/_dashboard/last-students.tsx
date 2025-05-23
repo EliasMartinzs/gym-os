@@ -1,5 +1,6 @@
 "use client";
 
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -8,28 +9,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { getLastStudents } from "@/features/personal/student/api/get-last-students";
+import { formatDate } from "@/lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 import { ChevronRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { NoData } from "../../../components/reusable/no-data";
-import { formatDate } from "@/lib/utils";
+import { State } from "../students/_components/status-students-chart-states";
+import { getStudent } from "@/features/personal/student/api/get-student";
 
 export const LastStudents = () => {
-  const { data, isError, isLoading } = getLastStudents();
+  const { data, isError, isLoading, isRefetching, refetch } = getLastStudents();
+  const queryClient = useQueryClient();
 
-  if (isLoading) {
+  if (isLoading) return <SkeletonLoading />;
+  if (isError)
     return (
-      <div className="flex-1 h-full grid place-items-center">
-        <Skeleton className="w-full min-h-52 flex items-center justify-center">
-          <p>Carregando...</p>
-        </Skeleton>
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  }
-
-  if (isError) return <></>;
 
   if (!data?.data || data.data.length === 0) {
     return (
@@ -61,6 +66,12 @@ export const LastStudents = () => {
           {data.data.map((p) => (
             <Link
               href={`/personal/student/${p.userId}`}
+              onMouseEnter={() =>
+                queryClient.prefetchQuery({
+                  queryKey: ["student", p.userId],
+                  queryFn: () => getStudent(p.userId),
+                })
+              }
               key={p.id}
               className="bg-background p-3 rounded-3xl flex items-center gap-3 border hover:border-primary transition-colors"
             >

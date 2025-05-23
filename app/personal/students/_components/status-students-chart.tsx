@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertCircle, Loader2, RotateCcw } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import {
   Bar,
   BarChart,
@@ -10,7 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { Button } from "@/components/ui/button";
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -26,8 +26,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { getByStatus } from "@/features/personal/student/api/get-by-status";
-import { State } from "./status-students-chart-states";
 import { NoData } from "../../../../components/reusable/no-data";
+import { State } from "./status-students-chart-states";
 
 const chartConfig = {
   status: {
@@ -41,20 +41,25 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const StatusStudentsChart = () => {
-  const { data, isLoading, isError } = getByStatus();
+  const { data, isLoading, isError, isRefetching, refetch } = getByStatus();
 
   if (isLoading)
-    return <State state={<Loader2 className="size-6 animate-spin" />} />;
+    return (
+      <SkeletonLoading className="lg:max-w-2xl min-h-96">
+        Carregando seus alunos por status...
+      </SkeletonLoading>
+    );
 
   if (isError)
     return (
       <State
-        state={
-          <Button>
-            Recarregar <RotateCcw />
-          </Button>
-        }
-      />
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
 
   if (!data?.data || data?.data?.length === 0) {

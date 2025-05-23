@@ -25,7 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import client from "@/lib/client";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { cn } from "@/lib/utils";
-import { FullSessionFormValues } from "@/lib/validations";
+import { FullSessionFormValues } from "@/validations/session";
 import { LocationType, PriorityLevel, SessionStatus } from "@prisma/client";
 import { InferResponseType } from "hono";
 import { UseFormReturn } from "react-hook-form";
@@ -52,7 +52,6 @@ export const Step1FormSession = ({ form, students, isLoading }: Props) => {
         name="session.studentId"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Aluno</FormLabel>
             <FormControl>
               <Popover modal>
                 <PopoverTrigger asChild>
@@ -109,7 +108,6 @@ export const Step1FormSession = ({ form, students, isLoading }: Props) => {
         name="session.locationType"
         render={({ field }) => (
           <FormItem className="space-y-4">
-            <FormLabel>Tipo de atendimento</FormLabel>
             <FormControl>
               <RadioGroup
                 onValueChange={field.onChange}
@@ -218,7 +216,6 @@ export const Step1FormSession = ({ form, students, isLoading }: Props) => {
           name="session.status"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Status</FormLabel>
               <FormControl>
                 <Popover modal>
                   <PopoverTrigger asChild>
@@ -264,7 +261,6 @@ export const Step1FormSession = ({ form, students, isLoading }: Props) => {
           name="session.priority"
           render={({ field }) => (
             <FormItem className="flex=1">
-              <FormLabel>Prioridade</FormLabel>
               <FormControl>
                 <Popover modal>
                   <PopoverTrigger asChild>
@@ -313,7 +309,6 @@ export const Step1FormSession = ({ form, students, isLoading }: Props) => {
         name="session.observations"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Observações</FormLabel>
             <FormControl>
               <Textarea
                 value={field.value}

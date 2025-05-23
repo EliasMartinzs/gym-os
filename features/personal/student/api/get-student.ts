@@ -8,7 +8,7 @@ type Response = InferResponseType<
 
 export const getStudent = (param: string) => {
   const query = useQuery<Response, Error>({
-    queryKey: ["students", param],
+    queryKey: ["student", param],
     queryFn: async () => {
       const response = await client.api.personal.student[":id"].$get({
         param: {
@@ -26,6 +26,10 @@ export const getStudent = (param: string) => {
 
       return result.data;
     },
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    retry: 2,
+    retryDelay: 1000,
   });
 
   return query;

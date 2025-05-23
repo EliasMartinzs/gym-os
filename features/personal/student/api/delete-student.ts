@@ -35,6 +35,14 @@ export const deleteStudent = (id: string) => {
         queryClient.invalidateQueries({ queryKey: ["status"] }),
         queryClient.invalidateQueries({ queryKey: ["students-by-birthdate"] }),
         queryClient.invalidateQueries({ queryKey: ["duration"] }),
+        queryClient.invalidateQueries({ queryKey: ["format"] }),
+        queryClient.invalidateQueries({ queryKey: ["genders"] }),
+        queryClient.invalidateQueries({ queryKey: ["goals-students"] }),
+        queryClient.invalidateQueries({ queryKey: ["objectives"] }),
+        queryClient.invalidateQueries({ queryKey: ["last-students"] }),
+        queryClient.invalidateQueries({ queryKey: ["sessions"] }),
+        queryClient.invalidateQueries({ queryKey: ["students-session"] }),
+        queryClient.invalidateQueries({ queryKey: ["workouts"] }),
       ]);
     },
     onError: () => {

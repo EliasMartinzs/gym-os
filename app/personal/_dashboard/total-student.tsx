@@ -1,13 +1,13 @@
 "use client";
 
 import { getGenders } from "@/features/personal/student/api/get-genders";
-import { Loader2 } from "lucide-react";
 import { NoData } from "../../../components/reusable/no-data";
 
 import { TrendingUp } from "lucide-react";
 import * as React from "react";
 import { Label, Pie, PieChart } from "recharts";
 
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -22,6 +22,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { State } from "../students/_components/status-students-chart-states";
 
 const chartConfig = {
   total: {
@@ -36,7 +37,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export const TotalStudentChart = () => {
-  const { data, isError, isLoading } = getGenders();
+  const { data, isError, isLoading, refetch, isRefetching } = getGenders();
 
   const chartData = React.useMemo(
     () => [
@@ -58,14 +59,19 @@ export const TotalStudentChart = () => {
     return (data?.data?.MALE ?? 0) + (data?.data?.FEMALE ?? 0);
   }, [data?.data]);
 
-  if (isLoading)
-    return (
-      <div className="flex-1 h-full grid place-items-center">
-        <Loader2 className="size-6 animate-spin" />
-      </div>
-    );
+  if (isLoading) return <SkeletonLoading />;
 
-  if (isError) return <></>;
+  if (isError)
+    return (
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
+    );
 
   if (!data?.data || (data.data.MALE === 0 && data.data.FEMALE === 0)) {
     return (

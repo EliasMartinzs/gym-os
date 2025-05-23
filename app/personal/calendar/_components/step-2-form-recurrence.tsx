@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/select";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { cn } from "@/lib/utils";
-import { FullSessionFormValues } from "@/lib/validations";
+import { FullSessionFormValues } from "@/validations/session";
 import { DayOfWeek, RecurrencePattern, ScheduleType } from "@prisma/client";
 import { InputMask } from "@react-input/mask";
 import { format } from "date-fns";

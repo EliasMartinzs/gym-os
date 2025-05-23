@@ -4,13 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { getStudentsSession } from "@/features/personal/student/api/get-students-session";
 import { postSession } from "@/features/personal/student/api/post-session";
-import { FullSessionFormValues, FullSessionSchema } from "@/lib/validations";
+import {
+  FullSessionFormValues,
+  FullSessionSchema,
+} from "@/validations/session";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { Step1FormSession } from "./step1-form-session";
-import { Step2FormRecurrence } from "./step2-form-recurrence";
+import { Step1FormSession } from "./step-1-form-session";
+import { Step2FormRecurrence } from "./step-2-form-recurrence";
 
 type Props = {
   setOpen: (state: boolean) => void;
@@ -41,8 +44,12 @@ export const SessionForm = ({ setOpen }: Props) => {
   const onNextStep = async () => {
     const isSessionValid = await form.trigger("session");
 
-    if (isSessionValid) {
+    const isLastStep = step === 2;
+
+    if (isSessionValid && !isLastStep) {
       setStep(2);
+    } else {
+      await form.handleSubmit(onSubmit)();
     }
   };
 
@@ -80,7 +87,7 @@ export const SessionForm = ({ setOpen }: Props) => {
           <Button
             className="flex-1"
             variant="primary"
-            type={step === 1 ? "button" : "submit"}
+            type="button"
             onClick={onNextStep}
           >
             {step === 2 ? (

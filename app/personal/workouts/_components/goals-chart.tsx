@@ -1,14 +1,9 @@
 "use client";
 
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  TooltipProps,
-  XAxis,
-} from "recharts";
+import { Bar, BarChart, CartesianGrid, TooltipProps, XAxis } from "recharts";
 
+import { NoData } from "@/components/reusable/no-data";
+import { SkeletonLoading } from "@/components/reusable/skeleton-loading";
 import {
   Card,
   CardContent,
@@ -22,13 +17,12 @@ import {
   ChartTooltip,
 } from "@/components/ui/chart";
 import { getGoals } from "@/features/personal/student/api/get-goals";
-import { NoData } from "@/components/reusable/no-data";
-import { Loader2 } from "lucide-react";
 import { usePanelSlice } from "@/features/personal/student/hooks/use-expandable-panel";
-import { GoalPanel } from "./goal-panel";
-import React from "react";
 import { EnumTranslations } from "@/lib/enum-tranlations";
 import { FitnessGoal } from "@prisma/client";
+import React from "react";
+import { State } from "../../students/_components/status-students-chart-states";
+import { GoalPanel } from "./goal-panel";
 
 const chartConfig = {
   goal: {
@@ -54,7 +48,7 @@ const CustomChartTootlip = ({
 };
 
 export const GoalsChart = () => {
-  const { data, isLoading, isError } = getGoals();
+  const { data, isLoading, isError, isRefetching, refetch } = getGoals();
   const { openPanel, closePanel } = usePanelSlice();
 
   const chartData = React.useMemo(() => {
@@ -66,14 +60,21 @@ export const GoalsChart = () => {
     }));
   }, [data?.data]);
 
-  if (isLoading)
+  if (isLoading) return <SkeletonLoading />;
+
+  if (isError)
     return (
-      <div className="flex-1 h-full grid place-items-center">
-        <Loader2 className="size-6 animate-spin" />
-      </div>
+      <State
+        isRefetching={isRefetching}
+        onClick={() => {
+          refetch();
+        }}
+      >
+        Houve um erro ao buscar dados, tente novamente!
+      </State>
     );
-  if (isError) return <></>;
-  if (!data?.data || data.data.length === 0) {
+
+  if (!data?.data || data.data.length === 0 || !chartData) {
     return (
       <NoData
         title="Nenhum objetivo registrado ainda!"
@@ -99,34 +100,30 @@ export const GoalsChart = () => {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%">
-          <ChartContainer
-            config={chartConfig}
-            className="aspect-auto h-[250px] w-full"
+        <ChartContainer
+          config={chartConfig}
+          className="w-full h-[300px] overflow-x-auto overflow-y-hidden"
+        >
+          <BarChart
+            width={Math.max(300, chartData.length * 100)}
+            accessibilityLayer
+            data={chartData}
+            height={300}
           >
-            <BarChart accessibilityLayer data={chartData} barCategoryGap={1}>
-              <CartesianGrid vertical={false} />
-              <XAxis
-                dataKey="name"
-                tickLine={false}
-                axisLine={false}
-                width={0}
-              />
-              <ChartTooltip cursor={false} content={<CustomChartTootlip />} />
-              <Bar
-                dataKey="value"
-                barSize={50}
-                radius={8}
-                style={{ cursor: "pointer" }}
-                onClick={(data) => {
-                  openPanel(
-                    <GoalPanel goal={data.id} closePanel={closePanel} />
-                  );
-                }}
-              />
-            </BarChart>
-          </ChartContainer>
-        </ResponsiveContainer>
+            <CartesianGrid vertical={false} />
+            <XAxis dataKey="name" tickLine={false} axisLine={false} width={0} />
+            <ChartTooltip cursor={false} content={<CustomChartTootlip />} />
+            <Bar
+              dataKey="value"
+              barSize={50}
+              radius={8}
+              style={{ cursor: "pointer" }}
+              onClick={(data) => {
+                openPanel(<GoalPanel goal={data.id} closePanel={closePanel} />);
+              }}
+            />
+          </BarChart>
+        </ChartContainer>
       </CardContent>
     </Card>
   );
