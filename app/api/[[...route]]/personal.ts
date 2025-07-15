@@ -1386,7 +1386,7 @@ const app = new Hono()
           }),
         ]);
 
-        client.users.updateUserMetadata(auth?.userId, {
+        await client.users.updateUserMetadata(newStudent[0].id, {
           publicMetadata: {
             role: "STUDENT",
           },

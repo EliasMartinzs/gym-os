@@ -53,7 +53,7 @@ export const TopbarMobile = () => {
           <SheetContent className="w-full h-full flex items-center justify-center">
             <SheetHeader>
               <SheetTitle className="text-center text-2xl font-medium">
-                Gym-OS
+                The Personal
               </SheetTitle>
             </SheetHeader>
             <MenuLinks links={personalLinks} setOpen={setOpen} />

@@ -2,6 +2,7 @@ import {
   Calendar,
   Dumbbell,
   LayoutPanelLeft,
+  User,
   Users,
   Utensils,
 } from "lucide-react";
@@ -33,4 +34,25 @@ const personalLinks = [
   },
 ];
 
-export { personalLinks };
+const studentLinks = [
+  {
+    id: 1,
+    title: "Treinos",
+    icon: <Dumbbell />,
+    href: "/student",
+  },
+  {
+    id: 2,
+    title: "Agenda",
+    icon: <Calendar />,
+    href: "/student/calendar",
+  },
+  {
+    id: 3,
+    title: "Perfil",
+    icon: <User />,
+    href: "/student/profile",
+  },
+];
+
+export { personalLinks, studentLinks };
