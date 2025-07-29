@@ -1,9 +1,10 @@
 "use client";
 
-import { Menu } from "lucide-react";
-import Link from "next/link";
-import React, { useState } from "react";
+import { Contact, Home, LogIn, Menu, UsersRound } from "lucide-react";
+import { useState } from "react";
 
+import { MenuLinks } from "@/components/reusable/menu-links";
+import { ModeToggle } from "@/components/reusable/mode-toggle";
 import {
   Sheet,
   SheetContent,
@@ -11,23 +12,33 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const menuLinks = [
   {
-    label: "Home",
+    id: 1,
+    title: "Home",
     href: "/",
+    icon: <Home />,
   },
   {
-    label: "Sobre",
+    id: 2,
+    title: "Sobre",
     href: "#about",
+    icon: <UsersRound />,
   },
   {
-    label: "Contato",
+    id: 3,
+    title: "Contato",
     href: "#contact",
+    icon: <Contact />,
   },
   {
-    label: "Entrar",
+    id: 4,
+    title: "Entrar",
     href: "/sign-up",
+    icon: <LogIn />,
   },
 ];
 
@@ -35,49 +46,34 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="w-full p-4 lg:p-8 lg:px-24 fixed top-0 left-0 z-50">
-      <nav className="w-full flex gap-10 items-center justify-between">
-        <Link href="/" className="font-medium text-2xl">
-          Gym-OS
-        </Link>
-
+    <header className={cn("w-full p-4 absolute z-50 right-0")}>
+      <nav className={cn("w-full flex items-center lg:hidden")}>
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger>
-            <Menu className="block lg:hidden cursor-pointer" />
+            <Menu />
           </SheetTrigger>
-          <SheetContent className="bg-[#434343] border-none w-full h-full flex items-center justify-center gap-y-10">
+          <SheetContent
+            className="w-full h-full flex items-center justify-center"
+            side="left"
+          >
             <SheetHeader>
-              <SheetTitle className="text-white text-center text-5xl font-black">
-                Gym-OS
+              <SheetTitle className="text-center text-2xl font-medium">
+                Gym-Os
               </SheetTitle>
             </SheetHeader>
-            <MenuLinks setOpen={setOpen} />
+            <MenuLinks links={menuLinks} setOpen={setOpen} />
+            <ModeToggle />
           </SheetContent>
         </Sheet>
-
-        <div className="hidden lg:flex gap-x-3">
-          <MenuLinks setOpen={setOpen} />
-        </div>
+      </nav>
+      <nav className="hidden lg:flex items-center justify-center gap-5">
+        {menuLinks.map((item) => (
+          <Link href={item.href} key={item.id} className="text-lg">
+            {item.title}
+          </Link>
+        ))}
       </nav>
     </header>
-  );
-};
-
-const MenuLinks = ({ setOpen }: { setOpen: (prevState: boolean) => void }) => {
-  return (
-    <ul className="flex flex-col items-center justify-start lg:flex-row gap-3 max-lg:gap-y-10">
-      {menuLinks.map(({ label, href }) => (
-        <li key={label}>
-          <Link
-            href={href}
-            className="hover:underline underline-offset-8 hover:text-green-500 transition-colors text-white max-lg:text-4xl max-lg:font-medium"
-            onClick={() => setOpen(false)}
-          >
-            {label}
-          </Link>
-        </li>
-      ))}
-    </ul>
   );
 };
 
